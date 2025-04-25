@@ -1,13 +1,26 @@
 name: Commitlint
 
-on: [pull_request]
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
 
 jobs:
-  commitlint:
+  lint-pr-title:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - name: Lint PR title
-        uses: marocchino/commitlint-action@2d4bcf6941db58a67de27ef048d7c1a498878a4a
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          configFile: .commitlintrc.json
+          node-version: '20'
+
+      - name: Install Commitlint
+        run: |
+          npm install -g @commitlint/config-conventional @commitlint/cli
+
+      - name: Lint PR title
+        run: |
+          echo "${{ github.event.pull_request.title }}" | commitlint --config .commitlintrc.json
