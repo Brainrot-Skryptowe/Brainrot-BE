@@ -1,1 +1,1 @@
-﻿print("Hello word!s")
+﻿print("Hello word!")
