@@ -1,0 +1,17 @@
+{
+  "rules": {
+    "type-enum": [2, "always", ["feat", "fix", "core", "docs", "refactor"]],
+    "type-case": [2, "always", "lower-case"],
+    "scope-case": [2, "always", "lower-case"],
+    "scope-empty": [0],
+    "subject-case": [2, "always", "sentence-case"],
+    "subject-empty": [2, "never"],
+    "subject-full-stop": [2, "never", "."],
+    "header-pattern": [
+      2,
+      "always",
+      "^(feat|fix|core|docs|refactor)(\\([a-z0-9\\-]+\\))?: [A-Z].*$"
+    ],
+    "header-max-length": [2, "always", 100]
+  }
+}
