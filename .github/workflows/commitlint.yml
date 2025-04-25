@@ -6,8 +6,8 @@ jobs:
   commitlint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout
       - name: Lint PR title
-        uses: marocchino/commitlint-action@v4
+        uses: marocchino/commitlint-action
         with:
           configFile: .commitlintrc.json
