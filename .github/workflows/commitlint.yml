@@ -8,6 +8,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Lint PR title
-        uses: marocchino/commitlint-action@v5
+        uses: marocchino/commitlint-action@v4
         with:
           configFile: .commitlintrc.json
