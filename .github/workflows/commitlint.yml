@@ -23,4 +23,5 @@ jobs:
 
       - name: Lint PR title
         run: |
-          echo "${{ github.event.pull_request.title }}" | commitlint --config .commitlintrc.json
+          echo "${{ github.event.pull_request.title }}" | commitlint --config .github/workflows/.commitlintrc.json
+
