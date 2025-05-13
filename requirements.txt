@@ -5,3 +5,8 @@ sqlalchemy==2.0.40
 sqlmodel==0.0.24
 uvicorn==0.33.0
 pydantic-settings==2.8.1
+python-dotenv==1.0.1
+requests==2.31.0
+supabase==2.3.5
+moviepy==1.0.3
+psycopg2-binary==2.9.9
