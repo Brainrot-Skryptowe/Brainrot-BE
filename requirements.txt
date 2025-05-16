@@ -1,12 +1,13 @@
 fastapi==0.115.12
-pydantic==2.10.6
-pydantic-core==2.27.2
+pydantic==2.11.4
+pydantic-core==2.33.2
 sqlalchemy==2.0.40
 sqlmodel==0.0.24
 uvicorn==0.33.0
 pydantic-settings==2.8.1
 python-dotenv==1.0.1
 requests==2.31.0
-supabase==2.3.5
+supabase==2.15.1
 moviepy==1.0.3
 psycopg2-binary==2.9.9
+python-multipart==0.0.20
