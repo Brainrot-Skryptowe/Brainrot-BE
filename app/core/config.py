@@ -1,6 +1,8 @@
-from pydantic_settings import BaseSettings
-from typing import Optional
 import os
+from typing import Optional
+
+from pydantic_settings import BaseSettings
+
 
 class Settings(BaseSettings):
     POSTGRES_USER: str = os.getenv("POSTGRES_USER")
@@ -21,8 +23,7 @@ class Settings(BaseSettings):
     def __init__(self, **values):
         super().__init__(**values)
         if not self.SQLALCHEMY_DATABASE_URL:
-            self.SQLALCHEMY_DATABASE_URL = (
-                f"postgresql://{self.POSTGRES_USER}.{self.POSTGRES_SLACK}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
-            )
+            self.SQLALCHEMY_DATABASE_URL = f"postgresql://{self.POSTGRES_USER}.{self.POSTGRES_SLACK}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+
 
 settings = Settings()

@@ -1,23 +1,31 @@
-from sqlmodel import Session, select
-from ..models.movie import Movie
-from fastapi import UploadFile
-from app.storage.backends import SupabaseStorageBackend
-from typing import List, Optional
 import os
+from typing import List, Optional
+
+from fastapi import UploadFile
+from sqlmodel import Session, select
+
+from app.storage.backends import SupabaseStorageBackend
+
+from ..models.movie import Movie
+
 
 def get_movie(db: Session, movie_id: int) -> Optional[Movie]:
     return db.get(Movie, movie_id)
 
+
 def get_movies(db: Session, skip: int = 0, limit: int = 100) -> List[Movie]:
     return db.exec(select(Movie).offset(skip).limit(limit)).all()
 
-def create_movie(db: Session, storage: SupabaseStorageBackend, movie_file: UploadFile) -> Movie:
+
+def create_movie(
+    db: Session, storage: SupabaseStorageBackend, movie_file: UploadFile
+) -> Movie:
     filename = os.path.splitext(movie_file.filename)[0]
     extension = os.path.splitext(movie_file.filename)[1]
 
     db_movie = Movie(
         title=filename,
-        type=extension.lstrip('.'),
+        type=extension.lstrip("."),
     )
     db.add(db_movie)
     db.commit()
@@ -35,7 +43,10 @@ def create_movie(db: Session, storage: SupabaseStorageBackend, movie_file: Uploa
 
     return db_movie
 
-def delete_movie(db: Session, storage: SupabaseStorageBackend, movie_id: int) -> bool:
+
+def delete_movie(
+    db: Session, storage: SupabaseStorageBackend, movie_id: int
+) -> bool:
     db_movie = db.get(Movie, movie_id)
     if not db_movie:
         return False
