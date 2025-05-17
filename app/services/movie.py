@@ -5,7 +5,6 @@ from fastapi import UploadFile
 from sqlmodel import Session, select
 
 from app.core.storage import SupabaseStorageBackend
-
 from app.db.models.movie import Movie
 
 

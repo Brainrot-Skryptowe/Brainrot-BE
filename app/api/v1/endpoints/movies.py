@@ -3,10 +3,10 @@ from typing import List
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlmodel import Session
 
-from app.services import movie as crud_movie
+from app.core.storage import SupabaseStorageBackend, get_supabase_storage
 from app.db.session import get_session
 from app.schemas.movie import MovieRead
-from app.core.storage import SupabaseStorageBackend, get_supabase_storage
+from app.services import movie as crud_movie
 
 router = APIRouter()
 
