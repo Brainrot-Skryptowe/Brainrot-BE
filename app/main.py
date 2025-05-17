@@ -6,10 +6,9 @@ from app.db.session import engine
 
 app = FastAPI(title="Brainrot API")
 
-
+#test
 @app.on_event("startup")
 def on_startup():
     SQLModel.metadata.create_all(engine)
-
 
 app.include_router(api_router, prefix="/api/v1")
