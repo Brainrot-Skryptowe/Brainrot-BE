@@ -28,4 +28,3 @@ jobs:
         black --check . --line-length 80
         isort --check-only .
         ruff check .
-        # flake8 .
