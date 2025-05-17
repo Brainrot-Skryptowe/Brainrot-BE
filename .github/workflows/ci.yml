@@ -27,4 +27,5 @@ jobs:
       run: |
         black --check . --line-length 80
         isort --check-only .
-        flake8 .
+        ruff check .
+        # flake8 .
