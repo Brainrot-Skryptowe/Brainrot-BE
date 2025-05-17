@@ -4,9 +4,9 @@ from typing import List, Optional
 from fastapi import UploadFile
 from sqlmodel import Session, select
 
-from app.storage.backends import SupabaseStorageBackend
+from app.core.storage import SupabaseStorageBackend
 
-from ..models.movie import Movie
+from app.db.models.movie import Movie
 
 
 def get_movie(db: Session, movie_id: int) -> Optional[Movie]:
