@@ -1,13 +1,11 @@
 from enum import Enum
 
+class Language(str, Enum):
+    English = "a"
+    Spanish = "e"
+    French = "f"
+    Italian = "i"
+    Portuguese = "p"
+    Polish = "pl"
 
-class TtsLangauge(Enum):
-    English = ("a",)
-    Spanish = ("e",)
-    French = ("f",)
-    Italian = ("i",)
-    Portuguese = ("p",)
-
-
-class TranslationLangauge(TtsLangauge):
-    Polish = ("pl",)
+tts_languages = [lang for lang in Language if lang != Language.Polish]

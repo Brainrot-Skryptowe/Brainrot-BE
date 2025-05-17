@@ -4,7 +4,7 @@ from typing import List, Optional
 from fastapi import UploadFile
 from sqlmodel import Session, select
 
-from app.core.storage import SupabaseStorageBackend
+from app.core.storage.backends import SupabaseStorageBackend
 from app.db.models.movie import Movie
 
 

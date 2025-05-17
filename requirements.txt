@@ -4,10 +4,12 @@ pydantic-core==2.33.2
 sqlalchemy==2.0.40
 sqlmodel==0.0.24
 uvicorn==0.33.0
-pydantic-settings==2.8.1
+pydantic-settings~=2.9.1
 python-dotenv==1.0.1
 requests==2.31.0
 supabase==2.15.1
 moviepy==1.0.3
 psycopg2-binary==2.9.9
 python-multipart==0.0.20
+numpy~=2.2.5
+kokoro~=0.9.4
