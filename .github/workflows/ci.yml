@@ -25,6 +25,6 @@ jobs:
 
     - name: Run linters
       run: |
-        black --check .
+        black --check --line-length 80
         isort --check-only .
         flake8 .
