@@ -14,3 +14,4 @@ python-multipart==0.0.20
 numpy~=2.2.5
 kokoro~=0.9.4
 soundfile~=0.13.1
+passlib==1.7.4
