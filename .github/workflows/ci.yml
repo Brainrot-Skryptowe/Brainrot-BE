@@ -23,6 +23,10 @@ jobs:
         pip install -r requirements.txt
         pip install -r requirements-dev.txt
 
+    - name: Check Ruff formatting
+      run: |
+        ruff format . --check
+
     - name: Run linters
       run: |
         black --check . --line-length 80

@@ -1,5 +1,4 @@
 import os
-from typing import List, Optional
 
 from fastapi import UploadFile
 from sqlmodel import Session, select
@@ -8,11 +7,11 @@ from app.core.storage.backends import SupabaseStorageBackend
 from app.db.models.movie import Movie
 
 
-def get_movie(db: Session, movie_id: int) -> Optional[Movie]:
+def get_movie(db: Session, movie_id: int) -> Movie | None:
     return db.get(Movie, movie_id)
 
 
-def get_movies(db: Session, skip: int = 0, limit: int = 100) -> List[Movie]:
+def get_movies(db: Session, skip: int = 0, limit: int = 100) -> list[Movie]:
     return db.exec(select(Movie).offset(skip).limit(limit)).all()
 
 

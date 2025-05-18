@@ -13,7 +13,10 @@ class SupabaseStorageBackend:
         self.client.storage.from_(self.bucket).upload(
             path=dest_path, file=file, file_options={"content_type": "auto"}
         )
-        public_url = f"{self.supabase_url}/storage/v1/object/public/{self.bucket}//{dest_path}"
+        public_url = (
+            f"{self.supabase_url}/storage/v1/object/public/"
+            f"{self.bucket}//{dest_path}"
+        )
         return public_url
 
     def delete_file(self, file_path: str):

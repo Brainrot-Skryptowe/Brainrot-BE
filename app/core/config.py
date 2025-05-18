@@ -1,5 +1,4 @@
 import os
-from typing import Optional
 
 from pydantic_settings import BaseSettings
 
@@ -11,7 +10,7 @@ class Settings(BaseSettings):
     POSTGRES_PORT: int = os.getenv("POSTGRES_PORT")
     POSTGRES_HOST: str = os.getenv("POSTGRES_HOST")
     POSTGRES_DB: str = os.getenv("POSTGRES_DB")
-    SQLALCHEMY_DATABASE_URL: Optional[str] = None
+    SQLALCHEMY_DATABASE_URL: str | None = None
 
     SUPABASE_URL: str = os.getenv("SUPABASE_URL")
     SUPABASE_KEY: str = os.getenv("SUPABASE_KEY")

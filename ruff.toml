@@ -12,13 +12,19 @@ exclude = [
 
 [lint]
 select = [
-    "E",  # pycodestyle errors
-    "F",  # pyflakes
-    "I",  # isort
-    "B",  # flake8-bugbear
-    "UP", # pyupgrade
+    "E",
+    "E501", # line too long
+    "F",
+    "I",
+    "B",
+    "UP",
 ]
 ignore = []
+
+[lint.isort]
+known-first-party = ["app"]
+combine-as-imports = true
+force-single-line = false
 
 [format]
 quote-style = "double"
