@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Optional
 from sqlmodel import SQLModel, Field
 
@@ -9,3 +10,4 @@ class User(SQLModel, table=True):
     ig_link: Optional[str] = None
     yt_link: Optional[str] = None
     fb_link: Optional[str] = None
+    created_at: date = Field(default_factory=date.today)
