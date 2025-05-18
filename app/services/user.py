@@ -43,6 +43,18 @@ def update_user_socials(db: Session, uidd: int, new_data: UserUpdateSocials) -> 
     db.refresh(user)
     return user
 
+def update_user_password(db: Session, uidd: int, new_data: UserUpdatePassword) -> User:
+    user = db.get(User, uidd)
+    
+    if not PasswordHasher.verify_password(new_data.old_password, user.password):
+        raise HTTPException(status_code=401, detail="Invalid old password")
+    
+    user.password = PasswordHasher.hash_password(new_data.new_password)
+    
+    db.commit()
+    db.refresh(user)
+    return user
+
 
 class PasswordHasher:
     
