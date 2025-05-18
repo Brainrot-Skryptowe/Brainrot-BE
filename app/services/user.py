@@ -32,7 +32,17 @@ def create_user(db: Session, user_data: UserCreate) -> User:
 def get_user_by_email(db: Session, email: str) -> User:
     return db.exec(select(User).where(User.email == email)).first()
 
+
+def update_user_socials(db: Session, uidd: int, new_data: UserUpdateSocials) -> User:
+    user = db.get(User, uidd)
     
+    for attr_name, attr_value in user.model_dump(exclude_unset=True).items():
+        setattr(user, attr_name, attr_value)
+    
+    db.commit()
+    db.refresh(user)
+    return user
+
 
 class PasswordHasher:
     
