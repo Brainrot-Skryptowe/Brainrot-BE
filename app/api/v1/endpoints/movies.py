@@ -19,7 +19,7 @@ def read_movies(
     return services_movie.get_movies(db, skip=skip, limit=limit)
 
 
-@router.get("/movies/{movie_id}", response_model=MovieRead)
+@router.get("/{movie_id}", response_model=MovieRead)
 def read_movie(movie_id: int, db: Session = Depends(get_session)):
     db_movie = services_movie.get_movie(db, movie_id)
     if db_movie is None:
@@ -27,7 +27,7 @@ def read_movie(movie_id: int, db: Session = Depends(get_session)):
     return db_movie
 
 
-@router.post("/movies/", response_model=MovieRead, status_code=201)
+@router.post("/", response_model=MovieRead, status_code=201)
 def create_movie(
     movie_file: UploadFile = File(...),
     db: Session = Depends(get_session),
@@ -39,7 +39,7 @@ def create_movie(
     return movie
 
 
-@router.delete("/movies/{movie_id}", status_code=204)
+@router.delete("/{movie_id}", status_code=204)
 def delete_movie(
     movie_id: int,
     db: Session = Depends(get_session),
