@@ -1,5 +1,6 @@
+from fastapi import HTTPException
 from passlib.context import CryptContext
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from app.db.models.user import User
 from app.schemas.user import *
@@ -8,6 +9,9 @@ from app.schemas.user import *
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def create_user(db: Session, user_data: UserCreate) -> User:
+    if get_user_by_email(db, user_data.email):
+        raise HTTPException(status_code=400, detail="Account with provided email already exists")
+    
     hashed_password = PasswordHasher.hash_password(user_data.password)
     
     user = User(
@@ -25,6 +29,10 @@ def create_user(db: Session, user_data: UserCreate) -> User:
     return user
 
 
+def get_user_by_email(db: Session, email: str) -> User:
+    return db.exec(select(User).where(User.email == email)).first()
+
+    
 
 class PasswordHasher:
     
