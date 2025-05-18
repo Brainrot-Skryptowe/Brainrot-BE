@@ -27,4 +27,4 @@ jobs:
       run: |
         black --check . --line-length 80
         isort --check-only .
-        ruff check .
+        ruff check . --config ruff.toml
