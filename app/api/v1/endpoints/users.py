@@ -8,10 +8,13 @@ from app.schemas.user import *
 
 router = APIRouter()
 
-
-@router.post("/", response_model=UserRead, status_code=200)
+@router.post("/register", response_model=UserRead, status_code=200)
 def register_user(user_data: UserRegister, db: Session = Depends(get_session)):
     return user_services.register_user(user_data, db)
+
+@router.post("/login", response_model=UserRead)
+def log_in_user(user_data: UserLogIn, db: Session = Depends(get_session)):
+    return user_services.login_user(user_data, db)
 
 @router.get("/", response_model=list[UserRead])
 def get_users(db: Session = Depends(get_session)):
