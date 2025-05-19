@@ -23,14 +23,14 @@ def read_audios(
 
 @router.get("/{audio_id}", response_model=AudioRead)
 def read_audio(audio_id: int, db: Session = Depends(get_session)):
-    db_movie = crud_audio.get_audio(db, audio_id)
-    if db_movie is None:
+    db_audio = crud_audio.get_audio(db, audio_id)
+    if db_audio is None:
         raise HTTPException(status_code=404, detail="Audio not found")
-    return db_movie
+    return db_audio
 
 
 @router.post("/", response_model=AudioRead, status_code=201)
-def create_audi(
+def create_audio(
     audio_file: AudioCreate,
     db: Session = Depends(get_session),
     storage: SupabaseStorageBackend = Depends(get_supabase_storage),
@@ -42,7 +42,7 @@ def create_audi(
 
 
 @router.delete("/{audio_id}", status_code=204)
-def delete_movie(
+def delete_audio(
     audio_id: int,
     db: Session = Depends(get_session),
     storage: SupabaseStorageBackend = Depends(get_supabase_storage),
