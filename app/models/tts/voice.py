@@ -1,4 +1,6 @@
 from enum import Enum
+
+
 class Voice(Enum):
     def __new__(cls, value: str):
         obj = object.__new__(cls)
@@ -7,51 +9,51 @@ class Voice(Enum):
         return obj
 
     # English
-    AFHeart   = "af_heart"
-    AFAlloy   = "af_alloy"
-    AFAoede   = "af_aoede"
-    AFBella   = "af_bella"
+    AFHeart = "af_heart"
+    AFAlloy = "af_alloy"
+    AFAoede = "af_aoede"
+    AFBella = "af_bella"
     AFJessica = "af_jessica"
-    AFKore    = "af_kore"
-    AFNicole  = "af_nicole"
-    AFNova    = "af_nova"
-    AFRiver   = "af_river"
-    AFSarah   = "af_sarah"
-    AFSky     = "af_sky"
-    AMAdam    = "am_adam"
-    AMEcho    = "am_echo"
-    AMEric    = "am_eric"
-    AMFenrir  = "am_fenrir"
-    AMLiam    = "am_liam"
+    AFKore = "af_kore"
+    AFNicole = "af_nicole"
+    AFNova = "af_nova"
+    AFRiver = "af_river"
+    AFSarah = "af_sarah"
+    AFSky = "af_sky"
+    AMAdam = "am_adam"
+    AMEcho = "am_echo"
+    AMEric = "am_eric"
+    AMFenrir = "am_fenrir"
+    AMLiam = "am_liam"
     AMMichael = "am_michael"
-    AMOnyx    = "am_onyx"
-    AMPuck    = "am_puck"
-    AMSanta   = "am_santa"
-    BFAlice   = "bf_alice"
-    BFEmma    = "bf_emma"
+    AMOnyx = "am_onyx"
+    AMPuck = "am_puck"
+    AMSanta = "am_santa"
+    BFAlice = "bf_alice"
+    BFEmma = "bf_emma"
     BFIsabella = "bf_isabella"
-    BFLily    = "bf_lily"
-    BMDaniel  = "bm_daniel"
-    BMFable   = "bm_fable"
-    BMGeorge  = "bm_george"
-    BMLewis   = "bm_lewis"
+    BFLily = "bf_lily"
+    BMDaniel = "bm_daniel"
+    BMFable = "bm_fable"
+    BMGeorge = "bm_george"
+    BMLewis = "bm_lewis"
 
     # Spanish
-    EFDora    = "ef_dora"
-    EMAlex    = "em_alex"
-    EMSanta   = "em_santa"
+    EFDora = "ef_dora"
+    EMAlex = "em_alex"
+    EMSanta = "em_santa"
 
     # French
-    FFSiwis   = "ff_siwis"
+    FFSiwis = "ff_siwis"
 
     # Italian
-    IFSara    = "if_sara"
-    IMNicola  = "im_nicola"
+    IFSara = "if_sara"
+    IMNicola = "im_nicola"
 
     # Brazilian Portuguese
-    PFDora    = "pf_dora"
-    PMAlex    = "pm_alex"
-    PMSanta   = "pm_santa"
+    PFDora = "pf_dora"
+    PMAlex = "pm_alex"
+    PMSanta = "pm_santa"
 
     @classmethod
     def from_id(cls, id_: int) -> "Voice":

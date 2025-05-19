@@ -1,18 +1,20 @@
-﻿from typing import List
+from typing import List
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 
-from app.core.storage.backends import SupabaseStorageBackend, get_supabase_storage
+from app.core.storage.backends import (
+    SupabaseStorageBackend,
+    get_supabase_storage,
+)
 from app.db.session import get_session
-from app.schemas.audio import AudioRead, AudioCreate
-from app.schemas.movie import MovieRead
+from app.schemas.audio import AudioCreate, AudioRead
 from app.services import audio as crud_audio
 
 router = APIRouter()
 
 
-@router.get("/",response_model=List[AudioRead])
+@router.get("/", response_model=List[AudioRead])
 def read_audios(
     skip: int = 0, limit: int = 100, db: Session = Depends(get_session)
 ):
