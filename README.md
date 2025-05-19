@@ -15,8 +15,12 @@ python -m venv venv
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
 ```
+3) Install pre-commit
+```
+pre-commit install
+```
 
-3) Run server
+4) Run server
 ```
 uvicorn app.main:app
 ```
@@ -25,7 +29,7 @@ Or if you want to restart server every time python code is changed
 uvicorn app.main:app --reload
 ```
 
-4) Include .env file
+5) Include .env file
 
 Please ask developers for the file!
 
