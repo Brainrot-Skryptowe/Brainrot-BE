@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from sqlmodel import SQLModel
-import uvicorn
 
 from app.api.v1.api_v1 import api_router
 from app.db.session import engine

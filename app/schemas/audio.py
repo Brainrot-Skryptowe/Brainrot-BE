@@ -24,7 +24,7 @@ class AudioRead(AudioBase):
         orm_mode = True
 
     @classmethod
-    def from_orm(cls, audio: Audio):
+    def from_orm(cls, audio: Audio) -> "AudioRead":
         return cls(
             id=audio.id,
             title=audio.title,
