@@ -56,22 +56,18 @@ def get_user_by_email(email: str, db: Session) -> User | None:
     return db.exec(select(User).where(User.email == email)).first()
 
 
-def get_user_by_uidd(uidd: int, db: Session) -> User | None:
+def get_user_by_uidd(uidd: int, db: Session) -> User:
     user = db.get(User, uidd)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
 
-def update_user_socials(
-    uidd: int, new_data: UserUpdateSocials, db: Session
-) -> User:
-    user = db.get(User, uidd)
+def update_user_socials(user_data: UserUpdateSocials, db: Session) -> User:
+    user = get_user_by_uidd(user_data.uidd, db)
 
-    for attr_name, attr_value in new_data.model_dump(
-        exclude_unset=True
-    ).items():
-        setattr(user, attr_name, attr_value)
+    for attr, value in user_data.model_dump(exclude_unset=True).items():
+        setattr(user, attr, value)
 
     db.commit()
     db.refresh(user)

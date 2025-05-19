@@ -9,6 +9,7 @@ from app.schemas.user import (
     UserLogIn,
     UserRead,
     UserRegister,
+    UserUpdateSocials,
 )
 
 router = APIRouter()
@@ -43,10 +44,17 @@ def get_user_by_email(email: str, db: Session = Depends(get_session)):
 
 
 @router.patch("/password", response_model=UserRead)
-def update_user_password(
+def change_user_password(
     user_data: UserChangePassword, db: Session = Depends(get_session)
 ):
     return user_services.change_user_password(user_data, db)
+
+
+@router.patch("/socials", response_model=UserRead)
+def update_user_socials(
+    user_data: UserUpdateSocials, db: Session = Depends(get_session)
+):
+    return user_services.update_user_socials(user_data, db)
 
 
 @router.delete("/{uidd}", status_code=204)
