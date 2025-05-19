@@ -41,7 +41,8 @@ class UserUpdateSocials(BaseModel):
         orm_mode = True
 
 
-class UserUpdatePassword(BaseModel):
+class UserChangePassword(BaseModel):
+    uidd: int
     old_password: str
     new_password: str
 
