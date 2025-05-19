@@ -10,4 +10,5 @@ class Language(str, Enum):
     Polish = "pl"
 
 
+# List of languages that support Text-to-Speech (TTS), excluding Polish.
 tts_languages = [lang for lang in Language if lang != Language.Polish]

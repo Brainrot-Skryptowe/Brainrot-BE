@@ -11,6 +11,14 @@ from app.core.storage.backends import SupabaseStorageBackend
 from app.db.models.audio import Audio
 from app.schemas.audio import AudioCreate, AudioRead
 
+DEFAULT_SAMPLE_RATE = 22050
+DEFAULT_FILE_FORMAT = "WAV"
+
+
+def validate_audio(audio: Audio) -> bool:
+    if audio.size == 0:
+        raise ValueError("Generated audio is empty")
+
 
 def get_audio(db: Session, audio_id: int) -> AudioRead | None:
     result = db.get(Audio, audio_id)
@@ -30,8 +38,7 @@ def create_audio(
     db: Session, storage: SupabaseStorageBackend, audio_create: AudioCreate
 ) -> AudioRead:
     audio = _generate_audio(audio_create)
-    if audio.size == 0:
-        raise ValueError("Generated audio is empty")
+    validate_audio(audio)
 
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     filename = (
@@ -70,11 +77,16 @@ def delete_audio(
 def _upload_audio(
     filename: str, audio: np.ndarray, storage: SupabaseStorageBackend
 ) -> str:
-    if audio.size == 0:
-        raise ValueError("Generated audio is empty")
+    validate_audio(audio)
 
     buffer = io.BytesIO()
-    sf.write(buffer, audio, 22050, format="WAV", subtype="PCM_16")
+    sf.write(
+        buffer,
+        audio,
+        DEFAULT_SAMPLE_RATE,
+        format=DEFAULT_FILE_FORMAT,
+        subtype="PCM_16",
+    )
     buffer.seek(0)
     file_dest = storage.upload_file(buffer.read(), filename)
     return file_dest
