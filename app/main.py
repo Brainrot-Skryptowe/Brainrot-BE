@@ -14,7 +14,7 @@ def on_startup():
     SQLModel.metadata.create_all(
         engine
         )
-    for i in range(44): print("fd")
+    for i in range(45): print("fd")
 
 
 app.include_router(
