@@ -3,7 +3,12 @@ from passlib.context import CryptContext
 from sqlmodel import Session, select
 
 from app.db.models.user import User
-from app.schemas.user import UserRegister, UserUpdatePassword, UserUpdateSocials
+from app.schemas.user import (
+    UserChangePassword,
+    UserLogIn,
+    UserRegister,
+    UserUpdateSocials,
+)
 
 # singleton
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -32,8 +37,30 @@ def register_user(user_data: UserRegister, db: Session) -> User:
     return user
 
 
+def login_user(user_data: UserLogIn, db: Session) -> User:
+    user = get_user_by_email(user_data.email, db)
+
+    error_msg = "Invalid email or password"
+
+    if not user:
+        print("notuser")
+        raise HTTPException(status_code=404, detail=error_msg)
+
+    if not PasswordHasher.verify_password(user_data.password, user.password):
+        raise HTTPException(status_code=401, detail=error_msg)
+
+    return user
+
+
 def get_user_by_email(email: str, db: Session) -> User | None:
     return db.exec(select(User).where(User.email == email)).first()
+
+
+def get_user_by_uidd(uidd: int, db: Session) -> User | None:
+    user = db.get(User, uidd)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
 
 
 def update_user_socials(
@@ -51,15 +78,15 @@ def update_user_socials(
     return user
 
 
-def update_user_password(
-    uidd: int, new_data: UserUpdatePassword, db: Session
-) -> User:
-    user = db.get(User, uidd)
+def change_user_password(user_data: UserChangePassword, db: Session) -> User:
+    user = get_user_by_uidd(user_data.uidd, db)
 
-    if not PasswordHasher.verify_password(new_data.old_password, user.password):
+    if not PasswordHasher.verify_password(
+        user_data.old_password, user.password
+    ):
         raise HTTPException(status_code=401, detail="Invalid old password")
 
-    user.password = PasswordHasher.hash_password(new_data.new_password)
+    user.password = PasswordHasher.hash_password(user_data.new_password)
 
     db.commit()
     db.refresh(user)

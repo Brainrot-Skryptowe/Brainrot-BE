@@ -4,7 +4,12 @@ from sqlmodel import Session, select
 import app.services.user as user_services
 from app.db.models.user import User
 from app.db.session import get_session
-from app.schemas.user import UserLogIn, UserRead, UserRegister
+from app.schemas.user import (
+    UserChangePassword,
+    UserLogIn,
+    UserRead,
+    UserRegister,
+)
 
 router = APIRouter()
 
@@ -26,10 +31,7 @@ def get_users(db: Session = Depends(get_session)):
 
 @router.get("/uidd/{uidd}", response_model=UserRead)
 def get_user_by_uidd(uidd: str, db: Session = Depends(get_session)):
-    user = db.exec(select(User).where(User.uidd == uidd)).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
+    return user_services.get_user_by_uidd(uidd, db)
 
 
 @router.get("/email/{email}", response_model=UserRead)
@@ -38,6 +40,13 @@ def get_user_by_email(email: str, db: Session = Depends(get_session)):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+
+@router.patch("/password", response_model=UserRead)
+def update_user_password(
+    user_data: UserChangePassword, db: Session = Depends(get_session)
+):
+    return user_services.change_user_password(user_data, db)
 
 
 @router.delete("/{uidd}", status_code=204)
