@@ -6,6 +6,7 @@ from sqlmodel import Field, SQLModel
 
 class Audio(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
+    title: str
     text: str
     voice: int
     language: str
