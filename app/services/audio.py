@@ -3,13 +3,12 @@ import io
 from typing import List, Optional, Sequence
 
 import numpy as np
+import soundfile as sf
 from kokoro import KPipeline
 from sqlmodel import Session, select
-import soundfile as sf
 
 from app.core.storage.backends import SupabaseStorageBackend
 from app.db.models.audio import Audio
-from app.db.models.movie import Movie
 from app.schemas.audio import AudioCreate, AudioRead
 
 
@@ -33,7 +32,8 @@ def create_audio(
     if audio.size == 0:
         raise ValueError("Generated audio is empty")
 
-    filename = f"{audio_create.text[:10]}_{audio_create.voice.value}_{audio_create.language.value}_{datetime.datetime.now()}.wav"
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    filename = f"{audio_create.text[:10]}_{audio_create.voice.value}_{audio_create.language.value}_{timestamp}.wav"
     file_dest = _upload_audio(filename, audio, storage)
 
     db_audio = Audio(

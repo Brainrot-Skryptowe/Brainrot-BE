@@ -29,7 +29,7 @@ class AudioRead(AudioBase):
             id=audio.id,
             title=audio.title,
             text=audio.text,
-            voice=Voice.from_id(audio.id),
+            voice=Voice.from_id(audio.voice),
             language=Language(audio.language),
             speed=audio.speed,
             created_at=audio.created_at,
