@@ -32,6 +32,7 @@ class UserLogIn(BaseModel):
 
 
 class UserUpdateSocials(BaseModel):
+    uidd: int
     tiktok_link: str | None = None
     ig_link: str | None = None
     yt_link: str | None = None
