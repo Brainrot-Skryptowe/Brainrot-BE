@@ -10,7 +10,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def register_user(user_data: UserRegister, db: Session) -> User:
-    if get_user_by_email(db, user_data.email):
+    if get_user_by_email(user_data.email, db):
         raise HTTPException(
             status_code=400, detail="Account with provided email already exists"
         )
@@ -32,7 +32,7 @@ def register_user(user_data: UserRegister, db: Session) -> User:
     return user
 
 
-def get_user_by_email(email: str, db: Session) -> User:
+def get_user_by_email(email: str, db: Session) -> User | None:
     return db.exec(select(User).where(User.email == email)).first()
 
 
