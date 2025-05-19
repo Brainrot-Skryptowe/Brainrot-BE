@@ -23,7 +23,13 @@ class UserRegister(UserBase):
 
     class Config:
         orm_mode = True
+        
+class UserLogIn(BaseModel):
+    email: str
+    password: str
 
+    class Config:
+        orm_mode = True
 
 class UserUpdateSocials(BaseModel):
     tiktok_link: Optional[str] = None
