@@ -15,3 +15,4 @@ numpy~=2.2.5
 kokoro~=0.9.4
 soundfile~=0.13.1
 passlib[bcrypt]==1.7.4
+google-auth==2.40.1

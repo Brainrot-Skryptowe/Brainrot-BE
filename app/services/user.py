@@ -1,7 +1,12 @@
+from datetime import date
+
 from fastapi import HTTPException
+from google.auth.transport.requests import Request
+from google.oauth2 import id_token
 from passlib.context import CryptContext
 from sqlmodel import Session, select
 
+from app.core.config import settings
 from app.db.models.user import User
 from app.schemas.user import (
     UserChangePassword,
@@ -48,6 +53,28 @@ def login_user(user_data: UserLogIn, db: Session) -> User:
 
     if not PasswordHasher.verify_password(user_data.password, user.password):
         raise HTTPException(status_code=401, detail=error_msg)
+
+    return user
+
+
+def google_auth(token: str, db: Session) -> User:
+    try:
+        decoded_token = id_token.verify_oauth2_token(
+            token, Request(), settings.GOOGLE_CLIENT_ID
+        )
+    except ValueError as err:
+        raise HTTPException(
+            status_code=401, detail="Invalid Google token"
+        ) from err
+
+    user = get_user_by_email(decoded_token["email"], db)
+    if not user:
+        user = User(
+            email=decoded_token["email"], password="", created_at=date.today()
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
 
     return user
 
