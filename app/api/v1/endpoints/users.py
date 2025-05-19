@@ -15,7 +15,7 @@ from app.schemas.user import (
 router = APIRouter()
 
 
-@router.post("/register", response_model=UserRead, status_code=200)
+@router.post("/register", response_model=UserRead, status_code=201)
 def register_user(user_data: UserRegister, db: Session = Depends(get_session)):
     return user_services.register_user(user_data, db)
 
@@ -25,7 +25,7 @@ def login_user(user_data: UserLogIn, db: Session = Depends(get_session)):
     return user_services.login_user(user_data, db)
 
 
-@router.post("google_auth", response_model=UserRead)
+@router.post("/google_auth", response_model=UserRead)
 def google_auth(token: str, db: Session = Depends(get_session)):
     return user_services.google_auth(token, db)
 
@@ -35,12 +35,12 @@ def get_users(db: Session = Depends(get_session)):
     return db.exec(select(User))
 
 
-@router.get("/uidd/{uidd}", response_model=UserRead)
+@router.get("/{uidd}", response_model=UserRead)
 def get_user_by_uidd(uidd: str, db: Session = Depends(get_session)):
     return user_services.get_user_by_uidd(uidd, db)
 
 
-@router.get("/email/{email}", response_model=UserRead)
+@router.get("/by-email", response_model=UserRead)
 def get_user_by_email(email: str, db: Session = Depends(get_session)):
     user = user_services.get_user_by_email(email, db)
     if not user:
