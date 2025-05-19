@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     SUPABASE_KEY: str = os.getenv("SUPABASE_KEY")
     BUCKET: str = os.getenv("BUCKET")
 
+    GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID")
+
     class Config:
         env_file = ".env"
 

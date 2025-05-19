@@ -21,8 +21,13 @@ def register_user(user_data: UserRegister, db: Session = Depends(get_session)):
 
 
 @router.post("/login", response_model=UserRead)
-def log_in_user(user_data: UserLogIn, db: Session = Depends(get_session)):
+def login_user(user_data: UserLogIn, db: Session = Depends(get_session)):
     return user_services.login_user(user_data, db)
+
+
+@router.post("google_auth", response_model=UserRead)
+def google_auth(token: str, db: Session = Depends(get_session)):
+    return user_services.google_auth(token, db)
 
 
 @router.get("/", response_model=list[UserRead])
