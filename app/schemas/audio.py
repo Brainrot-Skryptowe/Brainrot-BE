@@ -1,5 +1,4 @@
 from datetime import date
-from typing import Optional
 
 from pydantic import BaseModel
 
@@ -13,7 +12,7 @@ class AudioBase(BaseModel):
     text: str
     voice: Voice
     language: Language
-    speed: Optional[float] = None
+    speed: float | None = None
 
 
 class AudioRead(AudioBase):

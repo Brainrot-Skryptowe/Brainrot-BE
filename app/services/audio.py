@@ -1,7 +1,6 @@
 import datetime
 import io
-from typing import Sequence
-
+import collections.abc
 import numpy as np
 import soundfile as sf
 from kokoro import KPipeline
@@ -21,7 +20,7 @@ def get_audio(db: Session, audio_id: int) -> AudioRead | None:
 
 def get_audios(
     db: Session, skip: int = 0, limit: int = 100
-) -> Sequence[AudioRead]:
+) -> collections[AudioRead]:
     results = db.exec(select(Audio).offset(skip).limit(limit)).all()
     return [AudioRead.from_orm(obj) for obj in results]
 
@@ -34,7 +33,8 @@ def create_audio(
         raise ValueError("Generated audio is empty")
 
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    filename = f"{audio_create.text[:10]}_{audio_create.voice.value}_{audio_create.language.value}_{timestamp}.wav"
+    filename = (f"{audio_create.text[:10]}_{audio_create.voice.value}"
+                f"_{audio_create.language.value}_{timestamp}.wav")
     file_dest = _upload_audio(filename, audio, storage)
 
     db_audio = Audio(
@@ -87,7 +87,7 @@ def _generate_audio(audio_create: AudioCreate) -> np.ndarray:
     )
 
     audios: list[np.ndarray] = []
-    for i, (_, _, audio) in enumerate(generator):
+    for (_, _, audio) in generator:
         audios.append(audio)
 
     if not audios:

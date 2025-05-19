@@ -1,5 +1,3 @@
-from typing import List
-
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 
@@ -14,7 +12,7 @@ from app.services import audio as crud_audio
 router = APIRouter()
 
 
-@router.get("/", response_model=List[AudioRead])
+@router.get("/", response_model=list[AudioRead])
 def read_audios(
     skip: int = 0, limit: int = 100, db: Session = Depends(get_session)
 ):
