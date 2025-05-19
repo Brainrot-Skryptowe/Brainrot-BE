@@ -1,15 +1,14 @@
 from datetime import date
-from typing import Optional
 
 from sqlmodel import Field, SQLModel
 
 
 class User(SQLModel, table=True):
-    uidd: Optional[int] = Field(default=None, primary_key=True)
+    uidd: int | None = Field(default=None, primary_key=True)
     email: str
     password: str
-    tiktok_link: Optional[str] = None
-    ig_link: Optional[str] = None
-    yt_link: Optional[str] = None
-    fb_link: Optional[str] = None
+    tiktok_link: str | None = None
+    ig_link: str | None = None
+    yt_link: str | None = None
+    fb_link: str | None = None
     created_at: date = Field(default_factory=date.today)
