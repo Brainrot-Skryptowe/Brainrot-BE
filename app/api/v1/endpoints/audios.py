@@ -52,10 +52,11 @@ def transcribe_audio(
     if not audio:
         raise HTTPException(status_code=404, detail="Audio not found")
 
-    audio_bytes = storage.download_file(audio.file_path.split("//")[-1])
-    if audio_bytes is None:
+    try:
+        audio_bytes = storage.download_file(audio.file_path.split("//")[-1])
+    except Exception as e:
         raise HTTPException(
-            status_code=500, detail="Could not download audio file"
+            status_code=500, detail=f"Could not download audio file: {str(e)}"
         )
 
     return crud_audio.transcribe_audio_file(
