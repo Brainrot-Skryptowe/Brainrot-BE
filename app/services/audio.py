@@ -1,15 +1,24 @@
 import datetime
 import io
+import os
 from collections.abc import Sequence
+from datetime import date
 
 import numpy as np
 import soundfile as sf
+import whisper_timestamped as whisper
 from kokoro import KPipeline
 from sqlmodel import Session, select
 
 from app.core.storage.backends import SupabaseStorageBackend
+from app.core.transcription import Transcriber
 from app.db.models.audio import Audio
+from app.db.models.srt import Srt
+from app.models.transcription.transcription import Transcription
+from app.models.transcription.transcription_model import TranscriptionModel
 from app.schemas.audio import AudioCreate, AudioRead
+from app.schemas.srt import SrtBase
+from app.utils import srt
 
 DEFAULT_SAMPLE_RATE = 22050
 DEFAULT_FILE_FORMAT = "WAV"
@@ -25,6 +34,14 @@ def get_audio(db: Session, audio_id: int) -> AudioRead | None:
     if result is None:
         return None
     return AudioRead.from_orm(result)
+
+
+def get_transcription(db: Session, audio_id: int) -> SrtBase | None:
+    stmt = select(Srt).where(Srt.audio_id == audio_id)
+    result = db.exec(stmt).first()
+    if result is None:
+        return None
+    return SrtBase.from_orm(result)
 
 
 def get_audios(
@@ -72,6 +89,46 @@ def delete_audio(
     db.delete(db_audio)
     db.commit()
     return True
+
+
+def transcribe_audio_file(
+    db: Session,
+    storage: SupabaseStorageBackend,
+    audio_id: int,
+    audio_bytes: bytes,
+    model: TranscriptionModel,
+) -> SrtBase:
+    transcription = Transcriber.transcribe(audio_bytes, model)
+    file_dest = _upload_transcription(audio_id, transcription, storage)
+
+    stmt = select(Srt).where(Srt.audio_id == audio_id)
+    db_srt = db.exec(stmt).first()
+
+    if db_srt:
+        db_srt.file_path = file_dest
+        db_srt.created_at = date.today()
+    else:
+        db_srt = Srt(
+            audio_id=audio_id,
+            file_path=file_dest,
+        )
+        db.add(db_srt)
+
+    db.commit()
+    db.refresh(db_srt)
+    return SrtBase.from_orm(db_srt)
+
+
+def _upload_transcription(
+    audio_id: int, transcription: Transcription, storage: SupabaseStorageBackend
+) -> str:
+    buffer = io.BytesIO()
+    srt_content = srt.generate_srt(transcription)
+    buffer.write(srt_content.encode("utf-8"))
+    buffer.seek(0)
+    filename = f"transcription_{audio_id}.srt"
+    file_dest = storage.upload_file(buffer.read(), filename, True)
+    return file_dest
 
 
 def _upload_audio(
