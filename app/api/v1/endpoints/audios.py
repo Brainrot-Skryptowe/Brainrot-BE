@@ -6,12 +6,10 @@ from app.core.storage.backends import (
     get_supabase_storage,
 )
 from app.db.session import get_session
-from app.models.transcription.transcription import Transcription
 from app.models.transcription.transcription_model import TranscriptionModel
 from app.schemas.audio import AudioCreate, AudioRead
 from app.schemas.srt import SrtBase
 from app.services import audio as crud_audio
-from app.utils import srt
 
 router = APIRouter()
 

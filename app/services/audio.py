@@ -1,12 +1,10 @@
 import datetime
 import io
-import os
 from collections.abc import Sequence
 from datetime import date
 
 import numpy as np
 import soundfile as sf
-import whisper_timestamped as whisper
 from kokoro import KPipeline
 from sqlmodel import Session, select
 

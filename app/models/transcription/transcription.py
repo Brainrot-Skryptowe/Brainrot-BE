@@ -1,6 +1,5 @@
-from typing import List
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class Word(BaseModel):
@@ -16,16 +15,16 @@ class Segment(BaseModel):
     start: float
     end: float
     text: str
-    tokens: List[int]
+    tokens: list[int]
     temperature: float
     avg_logprob: float
     compression_ratio: float
     no_speech_prob: float
     confidence: float
-    words: List[Word]
+    words: list[Word]
 
 
 class Transcription(BaseModel):
     text: str
-    segments: List[Segment]
+    segments: list[Segment]
     language: str

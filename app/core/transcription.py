@@ -1,6 +1,4 @@
-import os
 import tempfile
-from typing import Dict
 
 import numpy as np
 import torch
@@ -11,7 +9,7 @@ from app.models.transcription.transcription_model import TranscriptionModel
 
 
 class Transcriber:
-    _models: Dict[str, whisper.Whisper] = {}
+    _models: dict[str, whisper.Whisper] = {}
 
     @classmethod
     def get_model(cls, model: str = "base") -> whisper.Whisper:
