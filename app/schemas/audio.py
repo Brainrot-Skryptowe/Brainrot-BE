@@ -18,6 +18,7 @@ class AudioBase(BaseModel):
 class AudioRead(AudioBase):
     id: int
     created_at: date
+    file_path: str
 
     class Config:
         orm_mode = True
@@ -32,6 +33,7 @@ class AudioRead(AudioBase):
             language=Language(audio.language),
             speed=audio.speed,
             created_at=audio.created_at,
+            file_path=audio.file_path,
         )
 
 

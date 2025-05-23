@@ -6,8 +6,12 @@ from app.core.storage.backends import (
     get_supabase_storage,
 )
 from app.db.session import get_session
+from app.models.transcription.transcription import Transcription
+from app.models.transcription.transcription_model import TranscriptionModel
 from app.schemas.audio import AudioCreate, AudioRead
+from app.schemas.srt import SrtBase
 from app.services import audio as crud_audio
+from app.utils import srt
 
 router = APIRouter()
 
@@ -37,6 +41,28 @@ def create_audio(
     if not audio:
         raise HTTPException(status_code=400, detail="Failed to create audio")
     return audio
+
+
+@router.post("/{audio_id}/transcribe", response_model=SrtBase)
+def transcribe_audio(
+    audio_id: int,
+    transcription_model: TranscriptionModel,
+    db: Session = Depends(get_session),
+    storage: SupabaseStorageBackend = Depends(get_supabase_storage),
+):
+    audio = crud_audio.get_audio(db, audio_id)
+    if not audio:
+        raise HTTPException(status_code=404, detail="Audio not found")
+
+    audio_bytes = storage.download_file(audio.file_path.split("//")[-1])
+    if audio_bytes is None:
+        raise HTTPException(
+            status_code=500, detail="Could not download audio file"
+        )
+
+    return crud_audio.transcribe_audio_file(
+        db, storage, audio.id, audio_bytes, transcription_model
+    )
 
 
 @router.delete("/{audio_id}", status_code=204)
