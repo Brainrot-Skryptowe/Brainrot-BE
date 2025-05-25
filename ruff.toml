@@ -19,9 +19,6 @@ select = [
     "B",
     "UP",
 ]
-ignore = [
-    "B008",
-]
 
 [lint.isort]
 known-first-party = ["app"]
