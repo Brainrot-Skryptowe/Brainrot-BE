@@ -16,8 +16,10 @@ select = [
     "E501", # line too long
     "F",
     "I",
-    "B",
     "UP",
+]
+ignore = [
+    "B",
 ]
 
 [lint.isort]
