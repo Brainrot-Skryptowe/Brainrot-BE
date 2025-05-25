@@ -7,8 +7,10 @@ def format_timestamp(seconds: float) -> str:
     td = timedelta(seconds=seconds)
     total_seconds = int(td.total_seconds())
     millis = int((td.total_seconds() - total_seconds) * 1000)
-    return (f"{td.seconds // 3600:02}:{(td.seconds // 60) % 60:02}"
-            f":{td.seconds % 60:02},{millis:03}")
+    return (
+        f"{td.seconds // 3600:02}:{(td.seconds // 60) % 60:02}"
+        f":{td.seconds % 60:02},{millis:03}"
+    )
 
 
 def generate_srt(transcription: Transcription) -> str:
