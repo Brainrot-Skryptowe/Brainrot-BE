@@ -8,8 +8,7 @@ from app.core.storage.backends import (
 from app.db.models.reel import Reel
 from app.db.session import get_session
 from app.schemas.reel import ReelCreate
-from app.services import movie as services_movie
-from app.services import reel as services_reel
+from app.services import movie as services_movie, reel as services_reel
 
 router = APIRouter()
 
