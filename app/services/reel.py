@@ -1,3 +1,4 @@
+import os
 from tempfile import NamedTemporaryFile
 
 import pysrt
@@ -8,7 +9,6 @@ from app.core.storage.backends import SupabaseStorageBackend
 from app.db.models.reel import Reel
 from app.schemas.reel import ReelInfo
 from app.utils.file import temporary_files
-import os
 
 
 def get_reel(db: Session, reel_id: int) -> Reel | None:
