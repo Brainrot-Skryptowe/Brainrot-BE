@@ -23,7 +23,7 @@ class ReelCreate(BaseModel):
     movie_id: int
     audio_id: int | None
     include_srt: bool = False
-    reel_info: "ReelInfo"
+    reel_info: ReelInfo
 
 
 class ReelInfo(BaseModel):
