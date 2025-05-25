@@ -17,7 +17,7 @@ pip install -r requirements-dev.txt
 ```
 
 3) Install FFmpeg 
-https://www.gyan.dev/ffmpeg/builds/
+[Download FFmpeg](https://www.gyan.dev/ffmpeg/builds/)
 
 
 4) Install pre-commit
