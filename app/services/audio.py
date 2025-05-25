@@ -56,23 +56,28 @@ def create_audio(
     validate_audio(audio)
 
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    filename = (
+    title = (
         f"{audio_create.text[:10]}_{audio_create.voice.value}"
         f"_{audio_create.language.value}_{timestamp}.wav"
     )
-    file_dest = _upload_audio(filename, audio, storage)
 
     db_audio = Audio(
-        title=filename,
+        title=title,
         text=audio_create.text,
         voice=audio_create.voice.id,
         language=audio_create.language.value,
         speed=audio_create.speed or 1.0,
-        file_path=file_dest,
     )
     db.add(db_audio)
     db.commit()
     db.refresh(db_audio)
+
+    file_dest = _upload_audio(f"audio_{db_audio.id}.wav", audio, storage)
+
+    db_audio.file_path = file_dest
+    db.commit()
+    db.refresh(db_audio)
+
     return AudioRead.from_orm(db_audio)
 
 

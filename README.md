@@ -15,12 +15,17 @@ python -m venv venv
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
 ```
-3) Install pre-commit
+
+3) Install FFmpeg 
+https://www.gyan.dev/ffmpeg/builds/
+
+
+4) Install pre-commit
 ```
 pre-commit install
 ```
 
-4) Run server
+5) Run server
 ```
 uvicorn app.main:app
 ```
@@ -29,7 +34,7 @@ Or if you want to restart server every time python code is changed
 uvicorn app.main:app --reload
 ```
 
-5) Include .env file
+6) Include .env file
 
 Please ask developers for the file!
 
