@@ -1,4 +1,4 @@
-﻿import os
+import os
 import tempfile
 from collections.abc import Iterable
 from contextlib import contextmanager
