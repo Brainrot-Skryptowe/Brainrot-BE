@@ -90,7 +90,6 @@ def _generate_reel(movie: bytes, audio: bytes | None, srt: bytes | None) -> str:
         video_clip = video_clip.cropped(
             x_center=video_clip.w / 2, width=VIDEO_WIDTH
         )
-        import os
 
         font_path = os.path.abspath(
             os.path.join(
