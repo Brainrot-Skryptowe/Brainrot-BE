@@ -101,7 +101,8 @@ def _generate_reel(movie: bytes, audio: bytes | None, srt: bytes | None) -> str:
                 "Lato-Regular.ttf",
             )
         )
-        os.path.exists(font_path)  # Ensure the font file exists
+        if not os.path.exists(font_path):  # Ensure the font file exists
+            raise FileNotFoundError(f"Font file not found at path: {font_path}")
         if srt_file:
             subs = pysrt.open(srt_file, encoding="utf-8")
             final_sub_end = max(
