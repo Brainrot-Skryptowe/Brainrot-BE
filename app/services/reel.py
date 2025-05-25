@@ -1,4 +1,4 @@
-﻿from tempfile import NamedTemporaryFile
+from tempfile import NamedTemporaryFile
 
 import pysrt
 from moviepy import AudioFileClip, CompositeVideoClip, TextClip, VideoFileClip
