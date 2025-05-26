@@ -29,20 +29,24 @@ def create_reel(
 ) -> Reel:
     reel_path = _generate_reel(movie, audio, srt)
 
+    with VideoFileClip(reel_path) as video_clip:
+        video_duration = video_clip.duration
+
     db_reel = Reel(
         title=reel_info.title,
         description=reel_info.description,
+        duration=int(video_duration),
     )
     db.add(db_reel)
     db.commit()
     db.refresh(db_reel)
 
     storage_filename = f"{db_reel.id}.mp4"
-    reel_file = open(reel_path, "rb")
-    reel_file.seek(0)
+    with open(reel_path, "rb") as reel_file:
+        reel_file.seek(0)
 
-    file_bytes = reel_file.read()
-    file_dest = storage.upload_file(file_bytes, storage_filename)
+        file_bytes = reel_file.read()
+        file_dest = storage.upload_file(file_bytes, storage_filename)
 
     db_reel.file_path = file_dest
     db.commit()

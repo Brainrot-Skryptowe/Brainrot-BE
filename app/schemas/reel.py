@@ -19,13 +19,13 @@ class ReelRead(ReelBase):
         orm_mode = True
 
 
+class ReelInfo(BaseModel):
+    title: str
+    description: str | None = None
+
+
 class ReelCreate(BaseModel):
     movie_id: int
     audio_id: int | None
     include_srt: bool = False
     reel_info: ReelInfo
-
-
-class ReelInfo(BaseModel):
-    title: str
-    description: str | None = None

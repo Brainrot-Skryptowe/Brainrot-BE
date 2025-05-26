@@ -5,15 +5,14 @@ from app.core.storage.backends import (
     SupabaseStorageBackend,
     get_supabase_storage,
 )
-from app.db.models.reel import Reel
 from app.db.session import get_session
-from app.schemas.reel import ReelCreate
+from app.schemas.reel import ReelCreate, ReelRead
 from app.services import movie as services_movie, reel as services_reel
 
 router = APIRouter()
 
 
-@router.post("/", response_model=Reel, status_code=201)
+@router.post("/", response_model=ReelRead, status_code=201)
 def generate_reel(
     reel_req: ReelCreate,
     db: Session = Depends(get_session),

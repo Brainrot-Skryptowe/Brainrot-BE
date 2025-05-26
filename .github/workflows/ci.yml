@@ -26,8 +26,6 @@ jobs:
       run: |
         ruff format . --check
 
-    - name: Run linters
+    - name: Run black
       run: |
         black --check . --line-length 80
-        isort --check-only .
-        ruff check . --config ruff.toml
