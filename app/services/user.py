@@ -4,23 +4,25 @@ from fastapi import HTTPException
 from google.auth.transport.requests import Request
 from google.oauth2 import id_token
 from passlib.context import CryptContext
-from sqlmodel import Session, select
+from sqlmodel import Session
 
 from app.core.config import settings
 from app.db.models.user import User
 from app.schemas.user import (
+    Token,
     UserChangePassword,
     UserLogIn,
     UserRegister,
     UserUpdateSocials,
 )
+from app.services.auth import create_access_token, get_user_by_email
 
 # singleton
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-def register_user(user_data: UserRegister, db: Session) -> User:
-    if get_user_by_email(user_data.email, db):
+def register_user(user_data: UserRegister, db: Session) -> Token:
+    if get_user_by_email(user_data.email, db, is_error_detected=False):
         raise HTTPException(
             status_code=400, detail="Account with provided email already exists"
         )
@@ -39,10 +41,11 @@ def register_user(user_data: UserRegister, db: Session) -> User:
     db.add(user)
     db.commit()
     db.refresh(user)
-    return user
+    token = create_access_token({"sub": user.email, "uidd": user.uidd})
+    return Token(access_token=token, token_type="bearer")
 
 
-def login_user(user_data: UserLogIn, db: Session) -> User:
+def login_user(user_data: UserLogIn, db: Session) -> Token:
     user = get_user_by_email(user_data.email, db)
 
     error_msg = "Invalid email or password"
@@ -53,11 +56,11 @@ def login_user(user_data: UserLogIn, db: Session) -> User:
 
     if not PasswordHasher.verify_password(user_data.password, user.password):
         raise HTTPException(status_code=401, detail=error_msg)
+    token = create_access_token({"sub": user.email, "uidd": user.uidd})
+    return Token(access_token=token, token_type="bearer")
 
-    return user
 
-
-def google_auth(token: str, db: Session) -> User:
+def google_auth(token: str, db: Session) -> Token:
     try:
         decoded_token = id_token.verify_oauth2_token(
             token, Request(), settings.GOOGLE_CLIENT_ID
@@ -75,23 +78,36 @@ def google_auth(token: str, db: Session) -> User:
         db.add(user)
         db.commit()
         db.refresh(user)
-
-    return user
-
-
-def get_user_by_email(email: str, db: Session) -> User | None:
-    return db.exec(select(User).where(User.email == email)).first()
+    token = create_access_token({"sub": user.email, "uidd": user.uidd})
+    return Token(access_token=token, token_type="bearer")
 
 
-def get_user_by_uidd(uidd: int, db: Session) -> User:
+def get_user_by_uidd(uidd: int, db: Session, is_error_detected=True) -> User:
     user = db.get(User, uidd)
-    if not user:
+    if not user and is_error_detected:
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
 
-def update_user_socials(user_data: UserUpdateSocials, db: Session) -> User:
-    user = get_user_by_uidd(user_data.uidd, db)
+def update_user_details_by_admin(
+    uidd: int, user_data: UserUpdateSocials, db: Session
+) -> User:
+    user = get_user_by_uidd(uidd, db)
+    if user_data.password:
+        user_data.password = PasswordHasher.hash_password(user_data.password)
+    for attr, value in user_data.model_dump(exclude_unset=True).items():
+        if attr != "password":
+            setattr(user, attr, value)
+
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+def update_user_socials(
+    uidd: int, user_data: UserUpdateSocials, db: Session
+) -> User:
+    user = get_user_by_uidd(uidd, db)
 
     for attr, value in user_data.model_dump(exclude_unset=True).items():
         setattr(user, attr, value)
@@ -101,8 +117,16 @@ def update_user_socials(user_data: UserUpdateSocials, db: Session) -> User:
     return user
 
 
-def change_user_password(user_data: UserChangePassword, db: Session) -> User:
-    user = get_user_by_uidd(user_data.uidd, db)
+def delete_user(uidd: int, db: Session) -> None:
+    user = get_user_by_uidd(uidd, db)
+    db.delete(user)
+    db.commit()
+
+
+def change_user_password(
+    uidd: int, user_data: UserChangePassword, db: Session
+) -> User:
+    user = get_user_by_uidd(uidd, db)
 
     if not PasswordHasher.verify_password(
         user_data.old_password, user.password

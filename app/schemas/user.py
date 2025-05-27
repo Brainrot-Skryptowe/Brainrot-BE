@@ -1,3 +1,5 @@
+import datetime
+
 from pydantic import BaseModel
 
 
@@ -10,7 +12,17 @@ class UserBase(BaseModel):
 
 
 class UserRead(UserBase):
+    role: str
+    created_at: datetime.date
+
+    class Config:
+        orm_mode = True
+
+
+class UserReadByAdmin(UserBase):
     uidd: int
+    created_at: datetime.date
+    role: str
 
     class Config:
         orm_mode = True
@@ -32,7 +44,6 @@ class UserLogIn(BaseModel):
 
 
 class UserUpdateSocials(BaseModel):
-    uidd: int
     tiktok_link: str | None = None
     ig_link: str | None = None
     yt_link: str | None = None
@@ -42,10 +53,26 @@ class UserUpdateSocials(BaseModel):
         orm_mode = True
 
 
+class UserUpdateDetailsByAdmin(BaseModel):
+    tiktok_link: str | None = None
+    ig_link: str | None = None
+    yt_link: str | None = None
+    fb_link: str | None = None
+    role: str | None = None
+    password: str | None = None
+
+    class Config:
+        orm_mode = True
+
+
 class UserChangePassword(BaseModel):
-    uidd: int
     old_password: str
     new_password: str
 
     class Config:
         orm_mode = True
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
