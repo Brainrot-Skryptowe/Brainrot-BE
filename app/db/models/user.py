@@ -12,3 +12,4 @@ class User(SQLModel, table=True):
     yt_link: str | None = None
     fb_link: str | None = None
     created_at: date = Field(default_factory=date.today)
+    role: str = Field(default="USER")

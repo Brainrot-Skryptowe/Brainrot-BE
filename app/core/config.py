@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     BUCKET: str = os.getenv("BUCKET")
 
     GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID")
+    SECRET_KEY: str = os.getenv("SECRET_KEY")
 
     class Config:
         env_file = ".env"
