@@ -1,47 +1,56 @@
 # Reels project
 
-
 ## 🛠️ Setup
 
-1) Create environment
+1) Create a virtual environment
 
 ```
 python -m venv venv
-# this line might be slightly different depending on the shell
+# this line might be slightly different depending on your shell
 ./venv/Scripts/activate
 ```
+
 2) Install packages
 ```
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
 ```
 
-3) Install FFmpeg 
+3) Install FFmpeg  
 [Download FFmpeg](https://www.gyan.dev/ffmpeg/builds/)
-
 
 4) Install pre-commit
 ```
 pre-commit install
 ```
 
-5) Run server
+5) Run the server
 ```
 uvicorn app.main:app
 ```
-Or if you want to restart server every time python code is changed
+Or, if you want the server to restart every time Python code is changed:
 ```
 uvicorn app.main:app --reload
 ```
 
-6) Include .env file
+6) Include the .env file
 
-Please ask developers for the file!
+Please ask the developers for this file!
 
-## Before pushing
-Type in you shell
+## Before pushing and committing changes
+
+Remember to install pre-commit:
 ```
-black . --line-length 80
-isort .
-ruff format . --line-length 80
+pre-commit install
+```
+
+Try to commit changes using the naming convention:
+```
+git add .
+git commit -m "fix: fix something"
+```
+
+If your commit was not successful, run:
+```
+ruff check . --fix
 ```
