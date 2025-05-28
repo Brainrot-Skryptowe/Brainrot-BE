@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID")
     SECRET_KEY: str = os.getenv("SECRET_KEY")
 
+    ALLOWED_VIDEO_EXTENSIONS: list[str] = [".mp4", ".mov"]
+    ROLES: list[str] = ["USER", "ADMIN"]
+
     class Config:
         env_file = ".env"
 

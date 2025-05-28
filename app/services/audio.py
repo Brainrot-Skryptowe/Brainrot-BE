@@ -28,29 +28,62 @@ def validate_audio(audio: Audio) -> bool:
 
 
 def get_audio(db: Session, audio_id: int) -> AudioRead | None:
-    result = db.get(Audio, audio_id)
-    if result is None:
+    audio = db.get(Audio, audio_id)
+    if audio is None:
         return None
-    return AudioRead.from_orm(result)
-
-
-def get_transcription(db: Session, audio_id: int) -> SrtBase | None:
     stmt = select(Srt).where(Srt.audio_id == audio_id)
-    result = db.exec(stmt).first()
-    if result is None:
-        return None
-    return SrtBase.from_orm(result)
+    srt_obj = db.exec(stmt).first()
+    audio.srt = srt_obj
+    return AudioRead.from_orm(audio)
 
 
 def get_audios(
     db: Session, skip: int = 0, limit: int = 100
 ) -> Sequence[AudioRead]:
     results = db.exec(select(Audio).offset(skip).limit(limit)).all()
-    return [AudioRead.from_orm(obj) for obj in results]
+    audio_reads = []
+    for audio in results:
+        stmt = select(Srt).where(Srt.audio_id == audio.id)
+        srt_obj = db.exec(stmt).first()
+        audio.srt = srt_obj
+        audio_reads.append(AudioRead.from_orm(audio))
+    return audio_reads
+
+
+def get_audios_by_user(
+    db: Session, user_id: int, skip: int = 0, limit: int = 100
+) -> Sequence[AudioRead]:
+    stmt = (
+        select(Audio).where(Audio.author == user_id).offset(skip).limit(limit)
+    )
+    results = db.exec(stmt).all()
+    audio_reads = []
+    for audio in results:
+        stmt = select(Srt).where(Srt.audio_id == audio.id)
+        srt_obj = db.exec(stmt).first()
+        audio.srt = srt_obj
+        audio_reads.append(AudioRead.from_orm(audio))
+    return audio_reads
+
+
+def get_audio_by_user(
+    db: Session, user_id: int, audio_id: int
+) -> AudioRead | None:
+    stmt = select(Audio).where(Audio.author == user_id, Audio.id == audio_id)
+    audio = db.exec(stmt).first()
+    if audio is None:
+        return None
+    stmt = select(Srt).where(Srt.audio_id == audio_id)
+    srt_obj = db.exec(stmt).first()
+    audio.srt = srt_obj
+    return AudioRead.from_orm(audio)
 
 
 def create_audio(
-    db: Session, storage: SupabaseStorageBackend, audio_create: AudioCreate
+    db: Session,
+    storage: SupabaseStorageBackend,
+    audio_create: AudioCreate,
+    user_id: int,
 ) -> AudioRead:
     audio = _generate_audio(audio_create)
     validate_audio(audio)
@@ -62,6 +95,7 @@ def create_audio(
     )
 
     db_audio = Audio(
+        author=user_id,
         title=title,
         text=audio_create.text,
         voice=audio_create.voice.id,
@@ -87,11 +121,24 @@ def delete_audio(
     db_audio = db.get(Audio, audio_id)
     if not db_audio:
         return False
+    stmt = select(Srt).where(Srt.audio_id == audio_id)
+    db_srt = db.exec(stmt).first()
+    if db_srt:
+        db.delete(db_srt)
     if db_audio.file_path:
         storage.delete_file(f"{db_audio.file_path}")
     db.delete(db_audio)
     db.commit()
     return True
+
+
+def delete_audio_by_user(
+    db: Session, user_id: int, storage: SupabaseStorageBackend, audio_id: int
+) -> bool:
+    db_audio = get_audio_by_user(db, user_id, audio_id)
+    if not db_audio:
+        return False
+    delete_audio(db, storage, db_audio.id)
 
 
 def transcribe_audio_file(
