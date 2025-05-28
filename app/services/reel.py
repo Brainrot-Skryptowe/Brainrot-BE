@@ -6,36 +6,110 @@ from moviepy import AudioFileClip, CompositeVideoClip, TextClip, VideoFileClip
 from sqlmodel import Session, select
 
 from app.core.storage.backends import SupabaseStorageBackend
+from app.db.models.audio import Audio
 from app.db.models.reel import Reel
-from app.schemas.reel import ReelInfo
+from app.schemas.audio import AudioRead
+from app.schemas.reel import ReelCreate, ReelWithAudio
 from app.utils.file import temporary_files
 
 
-def get_reel(db: Session, reel_id: int) -> Reel | None:
-    return db.get(Reel, reel_id)
+def get_reel(db: Session, reel_id: int) -> ReelWithAudio | None:
+    reel = db.get(Reel, reel_id)
+    if not reel:
+        return None
+    audio = db.get(Audio, reel.audio_id) if reel.audio_id else None
+    audio_read = AudioRead.from_orm(audio) if audio else None
+    return ReelWithAudio(
+        id=reel.id,
+        lang=reel.lang,
+        file_path=reel.file_path,
+        movie_id=reel.movie_id,
+        author=reel.author,
+        audio=audio_read,
+    )
 
 
-def get_reels(db: Session, skip: int = 0, limit: int = 100) -> list[Reel]:
-    return db.exec(select(Reel).offset(skip).limit(limit)).all()
+def get_reels(
+    db: Session, skip: int = 0, limit: int = 100
+) -> list[ReelWithAudio]:
+    reels = db.exec(select(Reel).offset(skip).limit(limit)).all()
+    result = []
+    for reel in reels:
+        audio = db.get(Audio, reel.audio_id) if reel.audio_id else None
+        audio_read = AudioRead.from_orm(audio) if audio else None
+        result.append(
+            ReelWithAudio(
+                id=reel.id,
+                lang=reel.lang,
+                file_path=reel.file_path,
+                movie_id=reel.movie_id,
+                author=reel.author,
+                audio=audio_read,
+            )
+        )
+    return result
+
+
+def get_reel_by_user(
+    db: Session, user_id: int, reel_id: int
+) -> ReelWithAudio | None:
+    reel = db.exec(
+        select(Reel).where(Reel.author == user_id, Reel.id == reel_id)
+    ).first()
+    if not reel:
+        return None
+    audio = db.get(Audio, reel.audio_id) if reel.audio_id else None
+    audio_read = AudioRead.from_orm(audio) if audio else None
+    return ReelWithAudio(
+        id=reel.id,
+        lang=reel.lang,
+        file_path=reel.file_path,
+        movie_id=reel.movie_id,
+        author=reel.author,
+        audio=audio_read,
+    )
+
+
+def get_reels_by_user(
+    db: Session, user_id: int, skip: int = 0, limit: int = 100
+) -> list[ReelWithAudio]:
+    reels = db.exec(
+        select(Reel).where(Reel.author == user_id).offset(skip).limit(limit)
+    ).all()
+    result = []
+    for reel in reels:
+        audio = db.get(Audio, reel.audio_id) if reel.audio_id else None
+        audio_read = AudioRead.from_orm(audio) if audio else None
+        result.append(
+            ReelWithAudio(
+                id=reel.id,
+                lang=reel.lang,
+                file_path=reel.file_path,
+                movie_id=reel.movie_id,
+                author=reel.author,
+                audio=audio_read,
+            )
+        )
+    return result
 
 
 def create_reel(
     db: Session,
     storage: SupabaseStorageBackend,
-    reel_info: ReelInfo,
+    reel_info: ReelCreate,
     movie: bytes,
     audio: bytes | None,
     srt: bytes | None,
+    lang: str,
+    user_id: int,
 ) -> Reel:
     reel_path = _generate_reel(movie, audio, srt)
 
-    with VideoFileClip(reel_path) as video_clip:
-        video_duration = video_clip.duration
-
     db_reel = Reel(
-        title=reel_info.title,
-        description=reel_info.description,
-        duration=int(video_duration),
+        lang=lang,
+        author=user_id,
+        movie_id=reel_info.movie_id,
+        audio_id=reel_info.audio_id,
     )
     db.add(db_reel)
     db.commit()

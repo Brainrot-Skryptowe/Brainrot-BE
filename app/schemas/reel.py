@@ -2,13 +2,11 @@ from datetime import date
 
 from pydantic import BaseModel
 
+from app.schemas.audio import AudioRead
+
 
 class ReelBase(BaseModel):
-    title: str
-    description: str | None = None
-    duration: int | None = None
     file_path: str | None = None
-    poster_path: str | None = None
 
 
 class ReelRead(ReelBase):
@@ -16,16 +14,22 @@ class ReelRead(ReelBase):
     created_at: date
 
     class Config:
-        orm_mode = True
-
-
-class ReelInfo(BaseModel):
-    title: str
-    description: str | None = None
+        from_attributes = True
 
 
 class ReelCreate(BaseModel):
     movie_id: int
     audio_id: int | None
     include_srt: bool = False
-    reel_info: ReelInfo
+
+
+class ReelWithAudio(BaseModel):
+    id: int
+    lang: str
+    file_path: str | None
+    movie_id: int
+    author: int
+    audio: AudioRead | None
+
+    class Config:
+        from_attributes = True
