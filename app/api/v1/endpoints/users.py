@@ -3,6 +3,10 @@ from sqlmodel import Session, select
 
 import app.services.auth as auth_services
 import app.services.user as user_services
+from app.core.storage.backends import (
+    SupabaseStorageBackend,
+    get_supabase_storage,
+)
 from app.db.models.user import User
 from app.db.session import get_session
 from app.schemas.user import (
@@ -21,8 +25,12 @@ router = APIRouter()
 
 # Guest endpoints
 @router.post("/register", response_model=Token, status_code=201)
-def register_user(user_data: UserRegister, db: Session = Depends(get_session)):
-    return user_services.register_user(user_data, db)
+def register_user(
+    user_data: UserRegister,
+    db: Session = Depends(get_session),
+    storage: SupabaseStorageBackend = Depends(get_supabase_storage),
+):
+    return user_services.register_user(user_data, db, storage)
 
 
 @router.post("/login", response_model=Token)

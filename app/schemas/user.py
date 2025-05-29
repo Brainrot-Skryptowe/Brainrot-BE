@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 class UserBase(BaseModel):
     email: str
+    nick: str
     tiktok_link: str | None = None
     ig_link: str | None = None
     yt_link: str | None = None
@@ -12,6 +13,7 @@ class UserBase(BaseModel):
 
 
 class UserRead(UserBase):
+    profile_image_url: str | None = None
     role: str
     created_at: datetime.date
 
@@ -21,6 +23,7 @@ class UserRead(UserBase):
 
 class UserReadByAdmin(UserBase):
     uidd: int
+    profile_image_url: str | None = None
     created_at: datetime.date
     role: str
 
