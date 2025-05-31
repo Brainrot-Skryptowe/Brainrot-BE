@@ -4,7 +4,7 @@ import tempfile
 import imageio.v3 as iio
 from fastapi import HTTPException, UploadFile
 from moviepy import VideoFileClip
-from sqlmodel import Session, select
+from sqlmodel import Session, asc, desc, select
 
 from app.core.config import settings
 from app.core.storage.backends import SupabaseStorageBackend
@@ -62,8 +62,23 @@ def get_movies_by_user_basic(db: Session, user_id: int) -> list[MovieReadBasic]:
     return db.exec(select(Movie).where(Movie.author == user_id)).all()
 
 
-def get_movies_by_user(db: Session, user_id: int) -> list[MovieRead]:
-    db_movies = db.exec(select(Movie).where(Movie.author == user_id)).all()
+def get_movies_by_user(
+    db: Session, user_id: int, sort_by: str = "title", sort_dir: str = "asc"
+) -> list[MovieRead]:
+    sort_options = {
+        "title": Movie.title,
+        "duration": Movie.duration,
+        "created_at": Movie.created_at,
+    }
+
+    sort_field = sort_options.get(sort_by, Movie.title)
+    sort_order = asc if sort_dir.lower() == "asc" else desc
+
+    db_movies = db.exec(
+        select(Movie)
+        .where(Movie.author == user_id)
+        .order_by(sort_order(sort_field))
+    ).all()
     return [_build_movie_read(db_movie) for db_movie in db_movies]
 
 
