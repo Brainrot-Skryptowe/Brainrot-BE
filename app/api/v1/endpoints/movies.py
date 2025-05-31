@@ -75,8 +75,12 @@ def read_user_movies_basic(
 def read_user_movies(
     db: Session = Depends(get_session),
     current_user: User = Depends(auth_services.get_current_user),
+    sort_by: str = "title",
+    sort_dir: str = "asc",
 ):
-    return services_movie.get_movies_by_user(db, current_user.uidd)
+    return services_movie.get_movies_by_user(
+        db, current_user.uidd, sort_by, sort_dir
+    )
 
 
 @router.get("/{movie_id}", response_model=MovieRead)
