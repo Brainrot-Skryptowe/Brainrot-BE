@@ -125,7 +125,7 @@ class ReelGenerator:
         final_clip.write_videofile(
             output_path,
             fps=self.fps,
-            codec=os.getenv("FFMPEG_CODEX"),
+            codec=os.getenv("FFMPEG_CODEC"),
             threads=os.getenv("FFMPEG_THREADS"),
         )
         return output_path
