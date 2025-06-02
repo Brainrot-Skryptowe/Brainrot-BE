@@ -1,4 +1,4 @@
-﻿import os
+import os
 import tempfile
 
 from moviepy import AudioFileClip, CompositeVideoClip, TextClip, VideoFileClip
