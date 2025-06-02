@@ -1,6 +1,5 @@
 ﻿import os
 import tempfile
-from typing import Optional
 
 from moviepy import AudioFileClip, CompositeVideoClip, TextClip, VideoFileClip
 from moviepy.video.tools.subtitles import SubtitlesClip
@@ -10,6 +9,7 @@ from app.models.reel_generator.horizontal_align import HorizontalAlign
 from app.models.reel_generator.vertical_align import VerticalAlign
 
 DEFAULT_REELS_SUFIX = ".mp4"
+
 
 class ReelGenerator:
     def __init__(
@@ -53,20 +53,23 @@ class ReelGenerator:
             text_align=self.text_align.value,
         )
 
-
     def _resolve_font_path(self, font_filename: str, fonts_subdir: str) -> str:
         base_dir = os.path.dirname(__file__)
-        candidate = os.path.abspath(os.path.join(base_dir, fonts_subdir, font_filename))
+        candidate = os.path.abspath(
+            os.path.join(base_dir, fonts_subdir, font_filename)
+        )
         if not os.path.isfile(candidate):
-            raise FileNotFoundError(f"Font file '{font_filename}' not found in '{fonts_subdir}'.")
+            raise FileNotFoundError(
+                f"Font file '{font_filename}' not found in '{fonts_subdir}'."
+            )
         return candidate
 
     def _save_inputs(
         self,
         tmpdir: str,
         movie_bytes: bytes,
-        audio_bytes: Optional[bytes],
-        srt_bytes: Optional[bytes],
+        audio_bytes: bytes | None,
+        srt_bytes: bytes | None,
     ):
         movie_path = os.path.join(tmpdir, "input.mp4")
         with open(movie_path, "wb") as f:
@@ -92,10 +95,13 @@ class ReelGenerator:
         clip = clip.cropped(x_center=clip.w / 2, width=self.video_width)
         return clip
 
-    def _load_subtitle_clips(self, srt_path: Optional[str], video_duration: float):
+    def _load_subtitle_clips(self, srt_path: str | None, video_duration: float):
         if srt_path:
-            subs = (SubtitlesClip(srt_path, make_textclip = self._make_textclip)
-                    .with_position((self.horizontal_align.value, self.vertical_align.value)))
+            subs = SubtitlesClip(
+                srt_path, make_textclip=self._make_textclip
+            ).with_position(
+                (self.horizontal_align.value, self.vertical_align.value)
+            )
             return [subs], subs.duration
         return [], video_duration
 
@@ -104,7 +110,7 @@ class ReelGenerator:
         final_clip = CompositeVideoClip([base_subclip] + subtitle_clips)
         return final_clip, base_subclip
 
-    def _attach_audio(self, final_clip, audio_path: Optional[str]):
+    def _attach_audio(self, final_clip, audio_path: str | None):
         if audio_path:
             audio_clip = AudioFileClip(audio_path)
             final_with_audio = final_clip.with_audio(audio_clip)
@@ -112,12 +118,14 @@ class ReelGenerator:
         return final_clip, None
 
     def _write_output(self, final_clip):
-        with tempfile.NamedTemporaryFile(prefix="out_reel_", suffix=DEFAULT_REELS_SUFIX, delete=False) as tmp_out:
+        with tempfile.NamedTemporaryFile(
+            prefix="out_reel_", suffix=DEFAULT_REELS_SUFIX, delete=False
+        ) as tmp_out:
             output_path = tmp_out.name
         final_clip.write_videofile(
             output_path,
             fps=self.fps,
-            codec= os.getenv("FFMPEG_CODEX"),
+            codec=os.getenv("FFMPEG_CODEX"),
             threads=os.getenv("FFMPEG_THREADS"),
         )
         return output_path
@@ -130,18 +138,29 @@ class ReelGenerator:
     def generate(
         self,
         movie_bytes: bytes,
-        audio_bytes: Optional[bytes] = None,
-        srt_bytes: Optional[bytes] = None,
+        audio_bytes: bytes | None = None,
+        srt_bytes: bytes | None = None,
     ) -> str:
         with tempfile.TemporaryDirectory(prefix="reel_") as tmpdir:
-            movie_path, audio_path, srt_path = self._save_inputs(tmpdir, movie_bytes, audio_bytes, srt_bytes)
+            movie_path, audio_path, srt_path = self._save_inputs(
+                tmpdir, movie_bytes, audio_bytes, srt_bytes
+            )
             video_clip = self._load_video_clip(movie_path)
-            subtitle_clips, final_duration = self._load_subtitle_clips(srt_path, video_clip.duration)
+            subtitle_clips, final_duration = self._load_subtitle_clips(
+                srt_path, video_clip.duration
+            )
             if final_duration > video_clip.duration:
                 raise ValueError("Subtitles duration exceeds video duration.")
-            final_clip, base_subclip = self._compose_final_clip(video_clip, subtitle_clips, final_duration + 1)
+            final_clip, base_subclip = self._compose_final_clip(
+                video_clip, subtitle_clips, final_duration + 1
+            )
             final_clip, audio_clip = self._attach_audio(final_clip, audio_path)
             output_path = self._write_output(final_clip)
-            clips_to_close = [final_clip, base_subclip, video_clip, audio_clip] + subtitle_clips
+            clips_to_close = [
+                final_clip,
+                base_subclip,
+                video_clip,
+                audio_clip,
+            ] + subtitle_clips
             self._cleanup(clips_to_close)
             return output_path
