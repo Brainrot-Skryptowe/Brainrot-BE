@@ -8,12 +8,12 @@ import whisper_timestamped as whisper
 from app.models.transcription.transcription import Transcription
 from app.models.transcription.transcription_model import TranscriptionModel
 
-
 DEFAULT_MODEL = TranscriptionModel.Base
 DEFAULT_LANGUAGE = "en"
 DEFAULT_FORMAT = ".wav"
 
-@functools.lru_cache(maxsize=None)
+
+@functools.cache
 def _load_whisper_model(model_name: str) -> whisper.Whisper:
     device = "cuda" if torch.cuda.is_available() else "cpu"
     return whisper.load_model(model_name, device=device)

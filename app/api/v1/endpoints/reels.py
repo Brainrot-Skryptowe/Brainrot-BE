@@ -66,7 +66,6 @@ def generate_reel(
     if db_audio is None:
         raise HTTPException(status_code=404, detail="Audio not found")
 
-
     movie = storage.download_file(f"{db_movie.id}.{db_movie.type}")
     audio = None
     if reel_req.audio_id:

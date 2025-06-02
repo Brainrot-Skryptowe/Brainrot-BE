@@ -4,4 +4,3 @@
 class Color(str, Enum):
     Black = "black"
     White = "white"
-
