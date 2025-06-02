@@ -1,16 +1,12 @@
 import os
-from tempfile import NamedTemporaryFile
-
-import pysrt
-from moviepy import AudioFileClip, CompositeVideoClip, TextClip, VideoFileClip
 from sqlmodel import Session, select
 
+from app.core.reel_generator import ReelGenerator
 from app.core.storage.backends import SupabaseStorageBackend
 from app.db.models.audio import Audio
 from app.db.models.reel import Reel
 from app.schemas.audio import AudioRead
 from app.schemas.reel import ReelCreate, ReelWithAudio
-from app.utils.file import temporary_files
 
 
 def get_reel(db: Session, reel_id: int) -> ReelWithAudio | None:
@@ -115,7 +111,7 @@ def create_reel(
     db.commit()
     db.refresh(db_reel)
 
-    storage_filename = f"{db_reel.id}.mp4"
+    storage_filename = f"reel_{db_reel.id}.mp4"
     with open(reel_path, "rb") as reel_file:
         reel_file.seek(0)
 
@@ -145,102 +141,13 @@ def delete_reel(
 
 
 def _generate_reel(movie: bytes, audio: bytes | None, srt: bytes | None) -> str:
-    files_data = [
-        (".mp4", movie),
-        (".mp3", audio or b""),
-        (".srt", srt or b""),
-    ]
+    generator = ReelGenerator(
+        font_filename="Lato-Regular.ttf",
+    )
 
-    VIDEO_WIDTH = 1080
-    VIDEO_HEIGHT = 1920
-    FPS = 24
-    FONT_SIZE = 100
-    FONT_COLOR = "white"
-    TEXT_MARGIN = 400
-
-    with temporary_files(files_data) as paths:
-        movie_file = paths[0]
-        audio_file = paths[1] if audio else None
-        srt_file = paths[2] if srt else None
-
-        video_clip = VideoFileClip(movie_file)
-        video_clip = video_clip.resized(height=VIDEO_HEIGHT)
-        video_clip = video_clip.cropped(
-            x_center=video_clip.w / 2, width=VIDEO_WIDTH
-        )
-
-        font_path = os.path.abspath(
-            os.path.join(
-                os.path.dirname(__file__),
-                "..",
-                "core",
-                "fonts",
-                "Lato-Regular.ttf",
-            )
-        )
-        if not os.path.exists(font_path):  # Ensure the font file exists
-            raise FileNotFoundError(f"Font file not found at path: {font_path}")
-        if srt_file:
-            subs = pysrt.open(srt_file, encoding="utf-8")
-            final_sub_end = max(
-                sub.end.hours * 3600
-                + sub.end.minutes * 60
-                + sub.end.seconds
-                + sub.end.milliseconds / 1000.0
-                for sub in subs
-            )
-            final_duration = final_sub_end + 1
-            subtitle_clips = []
-
-            for sub in subs:
-                start_sec = (
-                    sub.start.hours * 3600
-                    + sub.start.minutes * 60
-                    + sub.start.seconds
-                    + sub.start.milliseconds / 1000.0
-                )
-                end_sec = (
-                    sub.end.hours * 3600
-                    + sub.end.minutes * 60
-                    + sub.end.seconds
-                    + sub.end.milliseconds / 1000.0
-                )
-                duration_sub = end_sec - start_sec
-
-                txt_clip = TextClip(
-                    font=font_path,
-                    text=sub.text + "\n",
-                    font_size=FONT_SIZE,
-                    color=FONT_COLOR,
-                    method="caption",
-                    stroke_width=4,
-                    stroke_color="black",
-                    size=(VIDEO_WIDTH, int(FONT_SIZE * 4)),
-                    duration=duration_sub,
-                    text_align="center",
-                    vertical_align="bottom",
-                )
-                txt_clip = txt_clip.with_position(
-                    ("center", VIDEO_HEIGHT - TEXT_MARGIN - FONT_SIZE)
-                )
-                txt_clip = txt_clip.with_start(start_sec).with_end(end_sec)
-                subtitle_clips.append(txt_clip)
-        else:
-            final_duration = video_clip.duration
-            subtitle_clips = []
-
-        final_clip = CompositeVideoClip(
-            [video_clip.subclipped(0, final_duration)] + subtitle_clips
-        )
-
-        if audio_file:
-            final_clip = final_clip.with_audio(AudioFileClip(audio_file))
-
-        with NamedTemporaryFile(suffix=".mp4", delete=False) as temp_output:
-            output_path = temp_output.name
-
-        final_clip.write_videofile(
-            output_path, fps=FPS, codec="libx264", threads=16
-        )
-
-        return output_path
+    output_path = generator.generate(
+        movie_bytes=movie,
+        audio_bytes=audio,
+        srt_bytes=srt if srt else None,
+    )
+    return output_path
