@@ -66,10 +66,13 @@ def generate_reel(
     if db_audio is None:
         raise HTTPException(status_code=404, detail="Audio not found")
 
+
     movie = storage.download_file(f"{db_movie.id}.{db_movie.type}")
+    audio = None
     if reel_req.audio_id:
         audio = storage.download_file(f"audio_{reel_req.audio_id}.wav")
 
+    srt = None
     if reel_req.include_srt:
         srt = storage.download_file(f"transcription_{reel_req.audio_id}.srt")
 

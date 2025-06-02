@@ -1,3 +1,4 @@
+import functools
 import tempfile
 
 import numpy as np
@@ -8,32 +9,34 @@ from app.models.transcription.transcription import Transcription
 from app.models.transcription.transcription_model import TranscriptionModel
 
 
+DEFAULT_MODEL = TranscriptionModel.Base
+DEFAULT_LANGUAGE = "en"
+DEFAULT_FORMAT = ".wav"
+
+@functools.lru_cache(maxsize=None)
+def _load_whisper_model(model_name: str) -> whisper.Whisper:
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    return whisper.load_model(model_name, device=device)
+
+
 class Transcriber:
-    _models: dict[str, whisper.Whisper] = {}
-
-    @classmethod
-    def get_model(cls, model: str = "base") -> whisper.Whisper:
-        if model not in cls._models:
-            cls._models[model] = whisper.load_model(
-                model, device="cuda" if torch.cuda.is_available() else "cpu"
-            )
-        return cls._models[model]
-
     @classmethod
     def transcribe(
         cls,
         audio_bytes: bytes,
-        model: TranscriptionModel = TranscriptionModel.Base,
-        language: str = "en",
-        format: str = ".wav",
+        model: TranscriptionModel = DEFAULT_MODEL,
+        language: str = DEFAULT_LANGUAGE,
+        format: str = DEFAULT_FORMAT,
     ) -> Transcription:
+        whisper_model = _load_whisper_model(model.value)
+
         with tempfile.NamedTemporaryFile(delete=True, suffix=format) as tmp:
             tmp.write(audio_bytes)
             tmp.flush()
             tmp_path = tmp.name
-            model = cls.get_model(model.value)
+
             audio = whisper.load_audio(tmp_path)
-            transcription = whisper.transcribe(model, audio, language)
+            transcription = whisper.transcribe(whisper_model, audio, language)
             cleaned = _convert_np_types(transcription)
             return Transcription(**cleaned)
 
