@@ -34,7 +34,7 @@ class SupabaseStorageBackend:
         try:
             return self.client.storage.from_(self.bucket).download(file_path)
         except Exception as e:
-            raise Exception(f"Error downloading file: {e}")
+            raise FileDownloadError(f"Error downloading file from path '{file_path}': {e}")
 
     def delete_file(self, file_path: str):
         self.client.storage.from_(self.bucket).remove(file_path)
