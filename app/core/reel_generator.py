@@ -8,7 +8,7 @@ from app.models.reel_generator.color import Color
 from app.models.reel_generator.horizontal_align import HorizontalAlign
 from app.models.reel_generator.vertical_align import VerticalAlign
 
-DEFAULT_REELS_SUFIX = ".mp4"
+DEFAULT_REELS_SUFFIX = ".mp4"
 
 
 class ReelGenerator:
