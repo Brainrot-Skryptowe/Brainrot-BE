@@ -46,6 +46,13 @@ class UserLogIn(BaseModel):
         orm_mode = True
 
 
+class UserGoogleAuth(BaseModel):
+    access_token: str
+
+    class Config:
+        orm_mode = True
+
+
 class UserUpdateSocials(BaseModel):
     tiktok_link: str | None = None
     ig_link: str | None = None
