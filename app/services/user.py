@@ -1,19 +1,18 @@
 import io
 from datetime import date
 
+import httpx
 from fastapi import HTTPException
-from google.auth.transport.requests import Request
-from google.oauth2 import id_token
 from passlib.context import CryptContext
 from PIL import Image, ImageDraw, ImageFont
 from sqlmodel import Session
 
-from app.core.config import settings
 from app.core.storage.backends import SupabaseStorageBackend
 from app.db.models.user import User
 from app.schemas.user import (
     Token,
     UserChangePassword,
+    UserGoogleAuth,
     UserLogIn,
     UserRegister,
     UserUpdateSocials,
@@ -69,24 +68,33 @@ def login_user(user_data: UserLogIn, db: Session) -> Token:
     return Token(access_token=token, token_type="bearer")
 
 
-def google_auth(token: str, db: Session) -> Token:
-    try:
-        decoded_token = id_token.verify_oauth2_token(
-            token, Request(), settings.GOOGLE_CLIENT_ID
-        )
-    except ValueError as err:
-        raise HTTPException(
-            status_code=401, detail="Invalid Google token"
-        ) from err
+def google_auth(body: UserGoogleAuth, db: Session) -> Token:
+    headers = {"Authorization": f"Bearer {body.access_token}"}
+    resp = httpx.get(
+        "https://www.googleapis.com/oauth2/v3/userinfo", headers=headers
+    )
 
-    user = get_user_by_email(decoded_token["email"], db)
+    if resp.status_code != 200:
+        raise HTTPException(
+            status_code=401, detail="Invalid Google access token"
+        )
+
+    user_info = resp.json()
+
+    user = get_user_by_email(user_info["email"], db, raise_exception=False)
     if not user:
+        email = user_info["email"]
         user = User(
-            email=decoded_token["email"], password="", created_at=date.today()
+            email=email,
+            nick=email.split("@")[0],
+            password="",
+            profile_image_url=user_info["picture"],
+            created_at=date.today(),
         )
         db.add(user)
         db.commit()
         db.refresh(user)
+
     token = create_access_token({"sub": user.email, "uidd": user.uidd})
     return Token(access_token=token, token_type="bearer")
 
