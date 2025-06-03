@@ -12,6 +12,7 @@ from app.db.session import get_session
 from app.schemas.user import (
     Token,
     UserChangePassword,
+    UserGoogleAuth,
     UserLogIn,
     UserRead,
     UserReadByAdmin,
@@ -39,8 +40,8 @@ def login_user(user_data: UserLogIn, db: Session = Depends(get_session)):
 
 
 @router.post("/google/auth", response_model=Token)
-def google_auth(token: str, db: Session = Depends(get_session)):
-    return user_services.google_auth(token, db)
+def google_auth(body: UserGoogleAuth, db: Session = Depends(get_session)):
+    return user_services.google_auth(body, db)
 
 
 # Admin-only endpoints
