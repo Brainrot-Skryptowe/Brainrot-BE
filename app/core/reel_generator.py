@@ -4,6 +4,7 @@ import tempfile
 from moviepy import AudioFileClip, CompositeVideoClip, TextClip, VideoFileClip
 from moviepy.video.tools.subtitles import SubtitlesClip
 
+from app.core.config import settings
 from app.models.reel_generator.color import Color
 from app.models.reel_generator.horizontal_align import HorizontalAlign
 from app.models.reel_generator.vertical_align import VerticalAlign
@@ -128,8 +129,8 @@ class ReelGenerator:
         final_clip.write_videofile(
             output_path,
             fps=self.fps,
-            codec=os.getenv("FFMPEG_CODEC"),
-            threads=os.getenv("FFMPEG_THREADS"),
+            codec=settings.FFMPEG_CODEX,
+            threads=settings.FFMPEG_THREADS,
         )
         return output_path
 
