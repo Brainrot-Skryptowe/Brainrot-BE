@@ -106,9 +106,12 @@ class ReelGenerator:
         return [], video_duration
 
     def _compose_final_clip(self, video_clip, subtitle_clips, final_duration):
-        base_subclip = video_clip.subclipped(0, final_duration)
-        final_clip = CompositeVideoClip([base_subclip] + subtitle_clips)
-        return final_clip, base_subclip
+        try:
+            base_subclip = video_clip.subclipped(0, final_duration)
+            final_clip = CompositeVideoClip([base_subclip] + subtitle_clips)
+            return final_clip, base_subclip
+        except Exception as e:
+            raise ValueError(f"Error composing final clip: {e}")
 
     def _attach_audio(self, final_clip, audio_path: str | None):
         if audio_path:
@@ -119,7 +122,7 @@ class ReelGenerator:
 
     def _write_output(self, final_clip):
         with tempfile.NamedTemporaryFile(
-            prefix="out_reel_", suffix=DEFAULT_REELS_SUFIX, delete=False
+            prefix="out_reel_", suffix=DEFAULT_REELS_SUFFIX, delete=False
         ) as tmp_out:
             output_path = tmp_out.name
         final_clip.write_videofile(
