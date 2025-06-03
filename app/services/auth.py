@@ -29,10 +29,10 @@ def create_access_token(
 
 
 def get_user_by_email(
-    email: str, db: Session, is_error_detected=True
+    email: str, db: Session, is_error_detected=True, raise_exception=True
 ) -> User | None:
     user = db.exec(select(User).where(User.email == email)).first()
-    if not user and is_error_detected:
+    if raise_exception and not user and is_error_detected:
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
