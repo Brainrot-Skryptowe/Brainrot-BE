@@ -14,10 +14,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
+#test
 @app.on_event("startup")
 def on_startup():
     SQLModel.metadata.create_all(engine)
-
 
 app.include_router(api_router, prefix="/api/v1")
