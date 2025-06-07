@@ -19,6 +19,9 @@ class Settings(BaseSettings):
     SUPABASE_KEY: str = os.getenv("SUPABASE_KEY")
     BUCKET: str = os.getenv("BUCKET")
 
+    FFMPEG_CODEC: str = os.getenv("FFMPEG_CODEC")
+    FFMPEG_THREADS: str = os.getenv("FFMPEG_THREADS")
+
     GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID")
     SECRET_KEY: str = os.getenv("SECRET_KEY")
 
