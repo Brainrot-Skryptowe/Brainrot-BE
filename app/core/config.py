@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = os.getenv("SECRET_KEY")
 
     ALLOWED_VIDEO_EXTENSIONS: list[str] = [".mp4", ".mov"]
+    ALLOWED_MUSIC_EXTENSIONS: list[str] = [".wav"]
     ROLES: list[str] = ["USER", "ADMIN"]
 
     class Config:

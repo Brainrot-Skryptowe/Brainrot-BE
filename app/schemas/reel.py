@@ -20,6 +20,8 @@ class ReelRead(ReelBase):
 class ReelCreate(BaseModel):
     movie_id: int
     audio_id: int | None
+    music_id: int | None
+    music_volume: float = 0.2
     include_srt: bool = False
 
 

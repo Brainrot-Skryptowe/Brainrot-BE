@@ -73,12 +73,18 @@ def generate_reel(
     if reel_req.include_srt:
         srt = storage.download_file(f"transcription_{reel_req.audio_id}.srt")
 
+    music = None
+    if reel_req.music_id:
+        music = storage.download_file(f"music_{reel_req.music_id}.wav")
+
     reel = services_reel.create_reel(
         db,
         storage,
         reel_req,
         movie,
         audio,
+        music,
+        reel_req.music_volume,
         srt,
         db_audio.language,
         current_user.uidd,
