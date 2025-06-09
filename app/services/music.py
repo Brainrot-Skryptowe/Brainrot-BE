@@ -1,5 +1,5 @@
-﻿import os
-from typing import Sequence
+import os
+from collections.abc import Sequence
 
 from fastapi import HTTPException, UploadFile
 from sqlmodel import Session, asc, desc, select
@@ -7,7 +7,7 @@ from sqlmodel import Session, asc, desc, select
 from app.core.config import settings
 from app.core.storage.backends import SupabaseStorageBackend
 from app.db.models.music import Music
-from app.schemas.music import MusicRead, MusicCreate
+from app.schemas.music import MusicCreate, MusicRead
 from app.services.utils import get_file_duration
 
 
@@ -22,13 +22,17 @@ def _music_to_read(db_music: Music) -> MusicRead:
         file_path=db_music.file_path,
     )
 
+
 def get_music(db: Session, music_id: int) -> Music | None:
     db_music = db.get(Music, music_id)
     if db_music is None:
         raise HTTPException(status_code=404, detail="Music not found")
     return db_music
 
-def get_user_music(db: Session, user_id: int, music_id: int) -> MusicRead | None:
+
+def get_user_music(
+    db: Session, user_id: int, music_id: int
+) -> MusicRead | None:
     db_music = db.exec(
         select(Music).where(Music.author == user_id, Music.id == music_id)
     ).first()
@@ -37,7 +41,9 @@ def get_user_music(db: Session, user_id: int, music_id: int) -> MusicRead | None
     return _music_to_read(db_music)
 
 
-def get_all_music(db: Session, skip: int = 0, limit: int = 100) -> Sequence[MusicRead]:
+def get_all_music(
+    db: Session, skip: int = 0, limit: int = 100
+) -> Sequence[MusicRead]:
     db_all_music = db.exec(select(Music).offset(skip).limit(limit)).all()
     return [_music_to_read(db_music) for db_music in db_all_music]
 
@@ -74,8 +80,8 @@ def create_music(
     if extension.lower() not in settings.ALLOWED_MUSIC_EXTENSIONS:
         raise HTTPException(
             status_code=400,
-            detail= "Invalid file type. Only the following extensions are allowed: "
-            + ", ".join(settings.ALLOWED_MUSIC_EXTENSIONS)
+            detail="Invalid file type. Only the following extensions are allowed: "
+            + ", ".join(settings.ALLOWED_MUSIC_EXTENSIONS),
         )
     file_bytes = music_file.file.read()
 
@@ -94,7 +100,6 @@ def create_music(
     storage_filename = f"music_{db_music.id}{extension}"
     file_dest = storage.upload_file(file_bytes, storage_filename)
     db_music.file_path = file_dest
-
 
     db.commit()
     db.refresh(db_music)
@@ -120,8 +125,10 @@ def delete_music_by_user(
 
     _delete_music_file(db, storage, db_music)
 
+
 def _delete_music_file(
-    db: Session, storage: SupabaseStorageBackend, db_music: Music) -> None:
+    db: Session, storage: SupabaseStorageBackend, db_music: Music
+) -> None:
     if db_music.file_path:
         storage.delete_file(f"music_{db_music.id}.{db_music.type}")
 

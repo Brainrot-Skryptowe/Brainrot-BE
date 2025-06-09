@@ -143,8 +143,14 @@ def delete_reel(
     return True
 
 
-def _generate_reel(movie: bytes, audio: bytes | None = None,
-                   srt: bytes | None = None, music: bytes | None = None, music_volume: float = 0.2, font: str = "Lato-Regular.ttf") -> str:
+def _generate_reel(
+    movie: bytes,
+    audio: bytes | None = None,
+    srt: bytes | None = None,
+    music: bytes | None = None,
+    music_volume: float = 0.2,
+    font: str = "Lato-Regular.ttf",
+) -> str:
     generator = ReelGenerator(
         font_filename=font,
     )
@@ -154,6 +160,6 @@ def _generate_reel(movie: bytes, audio: bytes | None = None,
         audio_bytes=audio,
         srt_bytes=srt,
         music_bytes=music,
-        music_volume=music_volume
+        music_volume=music_volume,
     )
     return output_path

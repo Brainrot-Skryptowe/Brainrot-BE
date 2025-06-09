@@ -1,7 +1,6 @@
-﻿from datetime import date
-from typing import TYPE_CHECKING
+from datetime import date
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, SQLModel
 
 
 class Music(SQLModel, table=True):
