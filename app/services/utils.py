@@ -2,11 +2,10 @@
 import tempfile
 import contextlib
 import wave
-
+from app.core.config import settings
 from moviepy import VideoFileClip
 
 DEFAULT_SUFFIX = ".mp4"
-AUDIO_SUFFIXES = {".wav", ".mp3", ".aac", ".flac", ".ogg"}
 
 
 def _duration_wav(path: str) -> int:
@@ -26,7 +25,7 @@ def get_file_duration(file_bytes: bytes, suffix: str = DEFAULT_SUFFIX) -> int:
         tmp_path = tmp.name
 
     try:
-        if  suffix in AUDIO_SUFFIXES:
+        if  suffix in settings.AUDIO_SUFFIXES:
             duration = _duration_wav(tmp_path)
         else:
             with VideoFileClip(tmp_path) as clip:
