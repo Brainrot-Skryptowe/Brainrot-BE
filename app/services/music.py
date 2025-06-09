@@ -117,9 +117,9 @@ def delete_music(
 
 
 def delete_music_by_user(
-    db: Session, user_id: int, storage: SupabaseStorageBackend, mousic_id: int
+    db: Session, user_id: int, storage: SupabaseStorageBackend, music_id: int
 ) -> None:
-    db_music = get_music(db, mousic_id)
+    db_music = get_music(db, music_id)
     if not db_music or db_music.author != user_id:
         raise HTTPException(status_code=404, detail="Music not found")
 

@@ -37,17 +37,17 @@ def read_music(
 
 @router.delete("/{music_id}/admin", status_code=204)
 def delete_music(
-    movie_id: int,
+    music_id: int,
     db: Session = Depends(get_session),
     storage: SupabaseStorageBackend = Depends(get_supabase_storage),
     _: User = Depends(auth_services.require_admin),
 ):
-    services_music.delete_music(db, storage, movie_id)
+    services_music.delete_music(db, storage, music_id)
 
 
 # User-specific endpoints
 @router.post("/", response_model=MusicRead, status_code=201)
-def create_movie(
+def create_music(
     title: str = Form(...),
     music_file: UploadFile = File(...),
     db: Session = Depends(get_session),
