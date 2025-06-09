@@ -1,4 +1,4 @@
-﻿from fastapi import APIRouter, Depends, File, Form, UploadFile
+from fastapi import APIRouter, Depends, File, Form, UploadFile
 from sqlmodel import Session
 
 import app.services.auth as auth_services
@@ -9,7 +9,7 @@ from app.core.storage.backends import (
 from app.db.models.music import Music
 from app.db.models.user import User
 from app.db.session import get_session
-from app.schemas.music import MusicRead, MusicCreate
+from app.schemas.music import MusicCreate, MusicRead
 from app.services import music as services_music
 
 router = APIRouter()
@@ -54,9 +54,7 @@ def create_movie(
     storage: SupabaseStorageBackend = Depends(get_supabase_storage),
     current_user: User = Depends(auth_services.get_current_user),
 ):
-    music_info = MusicCreate(
-        title=title
-    )
+    music_info = MusicCreate(title=title)
     return services_music.create_music(
         db, current_user.uidd, storage, music_file, music_info
     )

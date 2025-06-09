@@ -2,9 +2,9 @@ import os
 import tempfile
 
 from moviepy import AudioFileClip, CompositeVideoClip, TextClip, VideoFileClip
-from moviepy.video.tools.subtitles import SubtitlesClip
 from moviepy.audio.AudioClip import CompositeAudioClip
 from moviepy.audio.fx import AudioLoop
+from moviepy.video.tools.subtitles import SubtitlesClip
 
 from app.core.config import settings
 from app.models.reel_generator.color import Color
@@ -100,7 +100,9 @@ class ReelGenerator:
         return movie_path, audio_path, srt_path, music_path
 
     def _load_video_clip(self, movie_path: str):
-        clip = VideoFileClip(movie_path).without_audio()  # usuń oryginalny dźwięk
+        clip = VideoFileClip(
+            movie_path
+        ).without_audio()  # usuń oryginalny dźwięk
         clip = clip.resized(height=self.video_height)
         clip = clip.cropped(x_center=clip.w / 2, width=self.video_width)
         return clip
@@ -133,10 +135,14 @@ class ReelGenerator:
     def _add_background_music(self, clip, music_path: str, music_volume: float):
         try:
             original_audio = clip.audio
-            background_music = AudioFileClip(music_path).with_volume_scaled(music_volume)
+            background_music = AudioFileClip(music_path).with_volume_scaled(
+                music_volume
+            )
 
             if background_music.duration < clip.duration:
-                background_music = background_music.with_effects([AudioLoop(duration=clip.duration)])
+                background_music = background_music.with_effects(
+                    [AudioLoop(duration=clip.duration)]
+                )
 
             else:
                 background_music = background_music.subclip(0, clip.duration)
