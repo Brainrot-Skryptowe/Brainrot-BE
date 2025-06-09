@@ -29,6 +29,7 @@ class Settings(BaseSettings):
     ALLOWED_MUSIC_EXTENSIONS: list[str] = [".wav"]
     ALLOWED_AUDIO_EXTENSIONS: list[str] = [".wav"]
     ROLES: list[str] = ["USER", "ADMIN"]
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY")
 
     class Config:
         env_file = ".env"

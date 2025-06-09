@@ -19,3 +19,4 @@ google-auth==2.40.1
 whisper_timestamped
 torch~=2.7.0
 pysrt~=1.1.2
+openai~=1.30.1
