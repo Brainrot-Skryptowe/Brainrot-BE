@@ -12,6 +12,7 @@ from app.db.models.movie import Movie
 from app.schemas.audio import AudioRead
 from app.schemas.movie import MovieCreate, MovieRead, MovieReadBasic
 from app.schemas.reel import ReelWithAudio
+from app.services.utils import get_file_duration
 
 
 def _build_movie_read(db_movie):
@@ -93,21 +94,6 @@ def get_movie_by_user(
     return _build_movie_read(db_movie)
 
 
-def get_video_duration(file_bytes: bytes) -> int:
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp:
-        tmp.write(file_bytes)
-        tmp_path = tmp.name
-
-    try:
-        with VideoFileClip(tmp_path) as clip:
-            duration = int(clip.duration)
-    except Exception:
-        os.unlink(tmp_path)
-        raise ValueError("Cannot open video file for processing.")
-    os.unlink(tmp_path)
-    return duration
-
-
 def get_video_thumbnail(file_bytes: bytes) -> bytes | None:
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp:
         tmp.write(file_bytes)
@@ -146,7 +132,7 @@ def create_movie(
         )
     file_bytes = movie_file.file.read()
 
-    duration = get_video_duration(file_bytes)
+    duration = get_file_duration(file_bytes)
     thumbnail_bytes = get_video_thumbnail(file_bytes)
 
     db_movie = Movie(

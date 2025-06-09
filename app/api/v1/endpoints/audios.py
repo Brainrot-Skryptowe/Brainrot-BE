@@ -50,7 +50,6 @@ def delete_audio(
         raise HTTPException(status_code=404, detail="Audio not found")
     return None
 
-
 @router.post("/", response_model=AudioRead, status_code=201)
 def create_audio(
     audio_file: AudioCreate,

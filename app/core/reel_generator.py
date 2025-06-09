@@ -3,6 +3,9 @@ import tempfile
 
 from moviepy import AudioFileClip, CompositeVideoClip, TextClip, VideoFileClip
 from moviepy.video.tools.subtitles import SubtitlesClip
+from moviepy.audio.AudioClip import CompositeAudioClip
+from moviepy.audio.fx import AudioLoop
+
 from app.core.config import settings
 from app.models.reel_generator.color import Color
 from app.models.reel_generator.horizontal_align import HorizontalAlign
@@ -70,6 +73,7 @@ class ReelGenerator:
         movie_bytes: bytes,
         audio_bytes: bytes | None,
         srt_bytes: bytes | None,
+        music_bytes: bytes | None = None,
     ):
         movie_path = os.path.join(tmpdir, "input.mp4")
         with open(movie_path, "wb") as f:
@@ -87,10 +91,16 @@ class ReelGenerator:
             with open(srt_path, "wb") as f:
                 f.write(srt_bytes)
 
-        return movie_path, audio_path, srt_path
+        music_path = None
+        if music_bytes:
+            music_path = os.path.join(tmpdir, "music.mp3")
+            with open(music_path, "wb") as f:
+                f.write(music_bytes)
+
+        return movie_path, audio_path, srt_path, music_path
 
     def _load_video_clip(self, movie_path: str):
-        clip = VideoFileClip(movie_path)
+        clip = VideoFileClip(movie_path).without_audio()  # usuń oryginalny dźwięk
         clip = clip.resized(height=self.video_height)
         clip = clip.cropped(x_center=clip.w / 2, width=self.video_width)
         return clip
@@ -120,6 +130,22 @@ class ReelGenerator:
             return final_with_audio, audio_clip
         return final_clip, None
 
+    def _add_background_music(self, clip, music_path: str, music_volume: float):
+        try:
+            original_audio = clip.audio
+            background_music = AudioFileClip(music_path).with_volume_scaled(music_volume)
+
+            if background_music.duration < clip.duration:
+                background_music = background_music.with_effects([AudioLoop(duration=clip.duration)])
+
+            else:
+                background_music = background_music.subclip(0, clip.duration)
+
+            final_audio = CompositeAudioClip([original_audio, background_music])
+            return clip.with_audio(final_audio)
+        except Exception as e:
+            raise ValueError(f"Error adding background music: {e}")
+
     def _write_output(self, final_clip):
         with tempfile.NamedTemporaryFile(
             prefix="out_reel_", suffix=DEFAULT_REELS_SUFFIX, delete=False
@@ -143,10 +169,12 @@ class ReelGenerator:
         movie_bytes: bytes,
         audio_bytes: bytes | None = None,
         srt_bytes: bytes | None = None,
+        music_bytes: bytes | None = None,
+        music_volume: float = 0.2,
     ) -> str:
         with tempfile.TemporaryDirectory(prefix="reel_") as tmpdir:
-            movie_path, audio_path, srt_path = self._save_inputs(
-                tmpdir, movie_bytes, audio_bytes, srt_bytes
+            movie_path, audio_path, srt_path, music_path = self._save_inputs(
+                tmpdir, movie_bytes, audio_bytes, srt_bytes, music_bytes
             )
             video_clip = self._load_video_clip(movie_path)
             subtitle_clips, final_duration = self._load_subtitle_clips(
@@ -158,6 +186,10 @@ class ReelGenerator:
                 video_clip, subtitle_clips, final_duration + 1
             )
             final_clip, audio_clip = self._attach_audio(final_clip, audio_path)
+            if music_path:
+                final_clip = self._add_background_music(
+                    final_clip, music_path, music_volume
+                )
             output_path = self._write_output(final_clip)
             clips_to_close = [
                 final_clip,
