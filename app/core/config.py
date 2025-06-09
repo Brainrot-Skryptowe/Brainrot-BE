@@ -24,6 +24,7 @@ class Settings(BaseSettings):
 
     ALLOWED_VIDEO_EXTENSIONS: list[str] = [".mp4", ".mov"]
     ROLES: list[str] = ["USER", "ADMIN"]
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY")
 
     class Config:
         env_file = ".env"
