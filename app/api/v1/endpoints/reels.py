@@ -8,10 +8,12 @@ from app.core.storage.backends import (
 from app.db.models.user import User
 from app.db.session import get_session
 from app.schemas.reel import ReelCreate, ReelRead, ReelWithAudio
-from app.services import audio as services_audio
-from app.services import auth as auth_services
-from app.services import movie as services_movie
-from app.services import reel as services_reel
+from app.services import (
+    audio as services_audio,
+    auth as auth_services,
+    movie as services_movie,
+    reel as services_reel,
+)
 
 router = APIRouter()
 
