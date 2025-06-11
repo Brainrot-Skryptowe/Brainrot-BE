@@ -6,6 +6,7 @@ from app.models.shared.language import Language
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+
 def generate_reel_text(description: str, duration: int) -> str:
     prompt = (
         "Tell me ONLY about given topic"
@@ -36,6 +37,7 @@ LANGUAGE_CODE_MAP = {
     Language.Polish: "polish",
 }
 
+
 def translate_text(
     text: str, source_lang: Language, target_lang: Language
 ) -> dict[str, str]:
@@ -57,5 +59,5 @@ def translate_text(
     )
     return {
         source_lang.name.lower(): text,
-        target_lang.name.lower(): response.choices[0].message.content.strip()
+        target_lang.name.lower(): response.choices[0].message.content.strip(),
     }
