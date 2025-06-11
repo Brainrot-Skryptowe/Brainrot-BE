@@ -111,7 +111,7 @@ def create_audio(
     db_audio = Audio(
         author=user_id,
         title=title,
-        duration = get_file_duration(bytes,".wav"),
+        duration=get_file_duration(bytes, ".wav"),
         text=audio_create.text,
         voice=audio_create.voice.id,
         language=audio_create.language.value,
@@ -193,7 +193,6 @@ def _upload_transcription(
     filename = f"transcription_{audio_id}.srt"
     file_dest = storage.upload_file(buffer.read(), filename, True)
     return file_dest
-
 
 
 def _generate_audio(audio_create: AudioCreate) -> np.ndarray:
