@@ -145,7 +145,7 @@ class ReelGenerator:
                 )
 
             else:
-                background_music = background_music.subclip(0, clip.duration)
+                background_music = background_music.with_duration(clip.duration)
 
             final_audio = CompositeAudioClip([original_audio, background_music])
             return clip.with_audio(final_audio)
