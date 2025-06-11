@@ -9,7 +9,7 @@ from app.core.storage.backends import (
 from app.db.models.user import User
 from app.db.session import get_session
 from app.models.transcription.transcription_model import TranscriptionModel
-from app.schemas.audio import AudioCreate, AudioRead
+from app.schemas.audio import AudioCreate, AudioRead, AudioTranscriptionCreate
 from app.schemas.srt import SrtBase
 from app.services import audio as crud_audio
 
@@ -68,15 +68,14 @@ def create_audio(
     return audio
 
 
-@router.post("/{audio_id}/transcribe", response_model=SrtBase)
+@router.post("/transcribe", response_model=SrtBase)
 def transcribe_audio(
-    audio_id: int,
-    transcription_model: TranscriptionModel,
+    transcription_info: AudioTranscriptionCreate,
     db: Session = Depends(get_session),
     storage: SupabaseStorageBackend = Depends(get_supabase_storage),
     current_user: User = Depends(auth_services.get_current_user),
 ):
-    audio = crud_audio.get_audio_by_user(db, current_user.uidd, audio_id)
+    audio = crud_audio.get_audio_by_user(db, current_user.uidd, transcription_info.audio_id)
     if not audio:
         raise HTTPException(status_code=404, detail="Audio not found")
 
@@ -88,7 +87,7 @@ def transcribe_audio(
         )
 
     return crud_audio.transcribe_audio_file(
-        db, storage, audio.id, audio_bytes, transcription_model
+        db, storage, audio.id, audio_bytes, transcription_info.transcription_model
     )
 
 

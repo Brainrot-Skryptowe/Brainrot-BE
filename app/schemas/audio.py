@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 from app.db.models.audio import Audio
 from app.models.shared.language import Language
+from app.models.transcription.transcription_model import TranscriptionModel
 from app.models.tts.voice import Voice
 from app.schemas.srt import SrtBase  # Add this import
 
@@ -46,3 +47,7 @@ class AudioRead(AudioBase):
 
 class AudioCreate(AudioBase):
     pass
+
+class AudioTranscriptionCreate(BaseModel):
+    audio_id: int
+    transcription_model: TranscriptionModel
