@@ -15,6 +15,7 @@ class Audio(SQLModel, table=True):
     voice: int
     language: str
     speed: float
+    duration: int | None = None 
     file_path: str | None = None
     author: int = Field(foreign_key="user.uidd")
     created_at: date = Field(default_factory=date.today)

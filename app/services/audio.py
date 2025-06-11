@@ -16,6 +16,7 @@ from app.models.transcription.transcription import Transcription
 from app.models.transcription.transcription_model import TranscriptionModel
 from app.schemas.audio import AudioCreate, AudioRead
 from app.schemas.srt import SrtBase
+from app.services.utils import get_file_duration
 from app.utils import srt
 
 DEFAULT_SAMPLE_RATE = 22050
@@ -94,9 +95,23 @@ def create_audio(
         f"_{audio_create.language.value}_{timestamp}.wav"
     )
 
+    validate_audio(audio)
+
+    buffer = io.BytesIO()
+    sf.write(
+        buffer,
+        audio,
+        DEFAULT_SAMPLE_RATE,
+        format=DEFAULT_FILE_FORMAT,
+        subtype="PCM_16",
+    )
+    buffer.seek(0)
+    bytes = buffer.read()
+
     db_audio = Audio(
         author=user_id,
         title=title,
+        duration = get_file_duration(bytes,".wav"),
         text=audio_create.text,
         voice=audio_create.voice.id,
         language=audio_create.language.value,
@@ -106,8 +121,7 @@ def create_audio(
     db.commit()
     db.refresh(db_audio)
 
-    file_dest = _upload_audio(f"audio_{db_audio.id}.wav", audio, storage)
-
+    file_dest = storage.upload_file(bytes, f"audio_{db_audio.id}.wav")
     db_audio.file_path = file_dest
     db.commit()
     db.refresh(db_audio)
@@ -180,23 +194,6 @@ def _upload_transcription(
     file_dest = storage.upload_file(buffer.read(), filename, True)
     return file_dest
 
-
-def _upload_audio(
-    filename: str, audio: np.ndarray, storage: SupabaseStorageBackend
-) -> str:
-    validate_audio(audio)
-
-    buffer = io.BytesIO()
-    sf.write(
-        buffer,
-        audio,
-        DEFAULT_SAMPLE_RATE,
-        format=DEFAULT_FILE_FORMAT,
-        subtype="PCM_16",
-    )
-    buffer.seek(0)
-    file_dest = storage.upload_file(buffer.read(), filename)
-    return file_dest
 
 
 def _generate_audio(audio_create: AudioCreate) -> np.ndarray:
