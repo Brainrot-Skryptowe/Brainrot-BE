@@ -27,7 +27,7 @@ def get_file_duration(file_bytes: bytes, suffix: str = DEFAULT_SUFFIX) -> int:
         tmp_path = tmp.name
 
     try:
-        if suffix in settings.AUDIO_SUFFIXES:
+        if suffix in settings.ALLOWED_AUDIO_EXTENSIONS:
             duration = _duration_wav(tmp_path)
         else:
             with VideoFileClip(tmp_path) as clip:
