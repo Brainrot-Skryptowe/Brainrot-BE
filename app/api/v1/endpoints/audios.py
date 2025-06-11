@@ -75,7 +75,9 @@ def transcribe_audio(
     storage: SupabaseStorageBackend = Depends(get_supabase_storage),
     current_user: User = Depends(auth_services.get_current_user),
 ):
-    audio = crud_audio.get_audio_by_user(db, current_user.uidd, transcription_info.audio_id)
+    audio = crud_audio.get_audio_by_user(
+        db, current_user.uidd, transcription_info.audio_id
+    )
     if not audio:
         raise HTTPException(status_code=404, detail="Audio not found")
 
@@ -87,7 +89,11 @@ def transcribe_audio(
         )
 
     return crud_audio.transcribe_audio_file(
-        db, storage, audio.id, audio_bytes, transcription_info.transcription_model
+        db,
+        storage,
+        audio.id,
+        audio_bytes,
+        transcription_info.transcription_model,
     )
 
 
