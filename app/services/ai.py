@@ -7,7 +7,9 @@ from app.models.shared.language import Language
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
-def generate_reel_text(description: str, duration: int, target_lang: Language) -> str:
+def generate_reel_text(
+    description: str, duration: int, target_lang: Language
+) -> str:
     prompt = (
         "Tell me ONLY about given topic"
         f"It should last around {duration} seconds. "
