@@ -26,6 +26,3 @@ api_router.include_router(
     translations.router, prefix="/translations", tags=["translations"]
 )
 api_router.include_router(music.router, prefix="/music", tags=["music"])
-api_router.include_router(
-    defaults.router, prefix="/defaults", tags=["defaults"]
-)
