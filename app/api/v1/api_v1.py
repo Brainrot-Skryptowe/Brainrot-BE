@@ -4,11 +4,11 @@ from app.api.v1.endpoints import (
     audios,
     defaults,
     movies,
+    music,
     reel_texts,
     reels,
     translations,
     users,
-    music
 )
 
 api_router = APIRouter()

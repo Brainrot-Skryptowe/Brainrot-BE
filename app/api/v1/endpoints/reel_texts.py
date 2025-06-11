@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends
 
 from app.db.models.user import User
 from app.schemas.reel_text import ReelTextRequest, ReelTextResponse
-from app.services import ai as ai_service, auth as auth_services
+from app.services import ai as ai_service
+from app.services import auth as auth_services
 
 router = APIRouter()
 
