@@ -56,6 +56,13 @@ def register_user(
         expires_at=token_data.expires_at,
     )
 
+def refresh_token(current_user: User) -> Token:
+    token_data = create_access_token({"sub": current_user.email, "uidd": current_user.uidd})
+    return Token(
+        access_token=token_data.token,
+        token_type="bearer",
+        expires_at=token_data.expires_at,
+    )
 
 def login_user(user_data: UserLogIn, db: Session) -> Token:
     user = get_user_by_email(user_data.email, db)
