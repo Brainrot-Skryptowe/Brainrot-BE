@@ -19,10 +19,15 @@ class Settings(BaseSettings):
     SUPABASE_KEY: str = os.getenv("SUPABASE_KEY")
     BUCKET: str = os.getenv("BUCKET")
 
+    FFMPEG_CODEC: str = os.getenv("FFMPEG_CODEC")
+    FFMPEG_THREADS: str = os.getenv("FFMPEG_THREADS")
+
     GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID")
     SECRET_KEY: str = os.getenv("SECRET_KEY")
 
     ALLOWED_VIDEO_EXTENSIONS: list[str] = [".mp4", ".mov"]
+    ALLOWED_MUSIC_EXTENSIONS: list[str] = [".wav"]
+    ALLOWED_AUDIO_EXTENSIONS: list[str] = [".wav"]
     ROLES: list[str] = ["USER", "ADMIN"]
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY")
 

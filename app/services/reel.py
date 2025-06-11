@@ -96,11 +96,13 @@ def create_reel(
     reel_info: ReelCreate,
     movie: bytes,
     audio: bytes | None,
+    music: bytes | None,
+    music_volume: float | None,
     srt: bytes | None,
     lang: str,
     user_id: int,
 ) -> Reel:
-    reel_path = _generate_reel(movie, audio, srt)
+    reel_path = _generate_reel(movie, audio, srt, music, music_volume)
 
     db_reel = Reel(
         lang=lang,
@@ -141,14 +143,23 @@ def delete_reel(
     return True
 
 
-def _generate_reel(movie: bytes, audio: bytes | None, srt: bytes | None) -> str:
+def _generate_reel(
+    movie: bytes,
+    audio: bytes | None = None,
+    srt: bytes | None = None,
+    music: bytes | None = None,
+    music_volume: float = 0.2,
+    font: str = "Lato-Regular.ttf",
+) -> str:
     generator = ReelGenerator(
-        font_filename="Lato-Regular.ttf",
+        font_filename=font,
     )
 
     output_path = generator.generate(
         movie_bytes=movie,
         audio_bytes=audio,
-        srt_bytes=srt if srt else None,
+        srt_bytes=srt,
+        music_bytes=music,
+        music_volume=music_volume,
     )
     return output_path
