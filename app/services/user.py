@@ -49,8 +49,12 @@ def register_user(
     db.add(user)
     db.commit()
     db.refresh(user)
-    token = create_access_token({"sub": user.email, "uidd": user.uidd})
-    return Token(access_token=token, token_type="bearer")
+    token_data = create_access_token({"sub": user.email, "uidd": user.uidd})
+    return Token(
+        access_token=token_data.token,
+        token_type="bearer",
+        expires_at=token_data.expires_at,
+    )
 
 
 def login_user(user_data: UserLogIn, db: Session) -> Token:
@@ -64,8 +68,12 @@ def login_user(user_data: UserLogIn, db: Session) -> Token:
 
     if not PasswordHasher.verify_password(user_data.password, user.password):
         raise HTTPException(status_code=401, detail=error_msg)
-    token = create_access_token({"sub": user.email, "uidd": user.uidd})
-    return Token(access_token=token, token_type="bearer")
+    token_data = create_access_token({"sub": user.email, "uidd": user.uidd})
+    return Token(
+        access_token=token_data.token,
+        token_type="bearer",
+        expires_at=token_data.expires_at,
+    )
 
 
 def google_auth(body: UserGoogleAuth, db: Session) -> Token:
@@ -95,8 +103,12 @@ def google_auth(body: UserGoogleAuth, db: Session) -> Token:
         db.commit()
         db.refresh(user)
 
-    token = create_access_token({"sub": user.email, "uidd": user.uidd})
-    return Token(access_token=token, token_type="bearer")
+    token_data = create_access_token({"sub": user.email, "uidd": user.uidd})
+    return Token(
+        access_token=token_data.token,
+        token_type="bearer",
+        expires_at=token_data.expires_at,
+    )
 
 
 def get_user_by_uidd(uidd: int, db: Session, is_error_detected=True) -> User:

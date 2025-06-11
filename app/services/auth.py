@@ -1,3 +1,5 @@
+from __future__ import annotations
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 
 import jwt
@@ -15,10 +17,14 @@ JWT_EXPIRE_MINUTES = 60
 
 security = HTTPBearer()
 
+@dataclass
+class AccessToken:
+    token: str
+    expires_at: datetime
 
 def create_access_token(
     data: dict, expires_delta: timedelta | None = None
-) -> str:
+) -> AccessToken:
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -26,6 +32,8 @@ def create_access_token(
         expire = datetime.utcnow() + timedelta(minutes=JWT_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    return AccessToken(token=encoded_jwt, expires_at=expire)
 
 
 def get_user_by_email(
