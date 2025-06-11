@@ -8,5 +8,6 @@ class TranslationRequest(BaseModel):
     source_lang: Language
     target_lang: Language
 
+
 class TranslationResponse(BaseModel):
     translations: dict[str, str]

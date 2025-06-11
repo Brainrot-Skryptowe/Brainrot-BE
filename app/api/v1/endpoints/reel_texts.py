@@ -7,6 +7,7 @@ from app.services import auth as auth_services
 
 router = APIRouter()
 
+
 @router.post("/", response_model=ReelTextResponse)
 def generate_reel_text(
     req: ReelTextRequest,
