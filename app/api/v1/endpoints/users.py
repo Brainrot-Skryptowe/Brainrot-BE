@@ -38,9 +38,11 @@ def register_user(
 def login_user(user_data: UserLogIn, db: Session = Depends(get_session)):
     return user_services.login_user(user_data, db)
 
+
 @router.post("/refresh", response_model=Token)
 def refresh_token(current_user: User = Depends(auth_services.get_current_user)):
     return user_services.refresh_token(current_user)
+
 
 @router.post("/google/auth", response_model=Token)
 def google_auth(body: UserGoogleAuth, db: Session = Depends(get_session)):
