@@ -27,6 +27,7 @@ class Settings(BaseSettings):
 
     ALLOWED_VIDEO_EXTENSIONS: list[str] = [".mp4", ".mov"]
     ALLOWED_MUSIC_EXTENSIONS: list[str] = [".wav"]
+    ALLOWED_AUDIO_EXTENSIONS: list[str] = [".wav"]
     ROLES: list[str] = ["USER", "ADMIN"]
 
     class Config:
