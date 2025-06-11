@@ -53,12 +53,16 @@ def delete_audio(
 
 @router.post("/", response_model=AudioRead, status_code=201)
 def create_audio(
-    audio_file: AudioCreate,
+    audio_info: AudioCreate,
     db: Session = Depends(get_session),
     storage: SupabaseStorageBackend = Depends(get_supabase_storage),
     current_user: User = Depends(auth_services.get_current_user),
 ):
-    audio = crud_audio.create_audio(db, storage, audio_file, current_user.uidd)
+    if audio_info.text is None or audio_info.text.strip() == "":
+        raise HTTPException(
+            status_code=400, detail="Text field cannot be empty"
+        )
+    audio = crud_audio.create_audio(db, storage, audio_info, current_user.uidd)
     if not audio:
         raise HTTPException(status_code=400, detail="Failed to create audio")
     return audio
