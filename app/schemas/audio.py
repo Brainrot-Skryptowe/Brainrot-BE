@@ -21,7 +21,8 @@ class AudioRead(AudioBase):
     id: int
     created_at: date
     file_path: str
-    srtObject: SrtBase | None = None  # Add this field
+    duration: int | None = None
+    srtObject: SrtBase | None = None
 
     class Config:
         orm_mode = True
@@ -36,6 +37,7 @@ class AudioRead(AudioBase):
             id=audio.id,
             title=audio.title,
             text=audio.text,
+            duration=audio.duration,
             voice=Voice.from_id(audio.voice),
             language=Language(audio.language),
             speed=audio.speed,
