@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
@@ -17,10 +18,12 @@ JWT_EXPIRE_MINUTES = 60
 
 security = HTTPBearer()
 
+
 @dataclass
 class AccessToken:
     token: str
     expires_at: datetime
+
 
 def create_access_token(
     data: dict, expires_delta: timedelta | None = None
