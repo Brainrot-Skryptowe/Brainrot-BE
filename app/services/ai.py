@@ -7,11 +7,12 @@ from app.models.shared.language import Language
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
-def generate_reel_text(description: str, duration: int) -> str:
+def generate_reel_text(description: str, duration: int, target_lang: Language) -> str:
     prompt = (
         "Tell me ONLY about given topic"
         f"It should last around {duration} seconds. "
         f"Topic: {description}."
+        f"Respond in {target_lang.name}."
     )
     response = openai.chat.completions.create(
         model="gpt-4.1-nano",
@@ -28,22 +29,12 @@ def generate_reel_text(description: str, duration: int) -> str:
     return response.choices[0].message.content.strip()
 
 
-LANGUAGE_CODE_MAP = {
-    Language.English: "english",
-    Language.Spanish: "spanish",
-    Language.French: "french",
-    Language.Italian: "italian",
-    Language.Portuguese: "portuguese",
-    Language.Polish: "polish",
-}
-
-
 def translate_text(
     text: str, source_lang: Language, target_lang: Language
 ) -> dict[str, str]:
     prompt = (
-        f"Translate given text from {LANGUAGE_CODE_MAP[source_lang]}"
-        f" to {LANGUAGE_CODE_MAP[target_lang]}: {text}"
+        f"Translate given text from {source_lang.name}"
+        f" to {target_lang.name}: {text}"
     )
     response = openai.chat.completions.create(
         model="gpt-4.1-nano",
