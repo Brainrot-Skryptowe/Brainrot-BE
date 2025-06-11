@@ -13,5 +13,5 @@ def generate_reel_text(
     req: ReelTextRequest,
     _: User = Depends(auth_services.get_current_user),
 ):
-    text = ai_service.generate_reel_text(req.description, req.duration)
+    text = ai_service.generate_reel_text(req.description, req.duration, req.target_lang)
     return ReelTextResponse(text=text)
