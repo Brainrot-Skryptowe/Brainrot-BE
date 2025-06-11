@@ -48,6 +48,7 @@ class AudioRead(AudioBase):
 class AudioCreate(AudioBase):
     pass
 
+
 class AudioTranscriptionCreate(BaseModel):
     audio_id: int
     transcription_model: TranscriptionModel
