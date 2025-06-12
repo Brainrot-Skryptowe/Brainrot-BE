@@ -33,14 +33,11 @@ def register_user(
 
     hashed_password = PasswordHasher.hash_password(user_data.password)
 
-    profile_picture_url = _create_and_upload_avatar(user_data.nick, storage)
-
     user = User(
         email=user_data.email,
         nick=user_data.nick,
         password=hashed_password,
         tiktok_link=user_data.tiktok_link,
-        profile_image_url=profile_picture_url,
         ig_link=user_data.ig_link,
         yt_link=user_data.yt_link,
         fb_link=user_data.fb_link,
@@ -180,38 +177,38 @@ def change_user_password(
     return user
 
 
-def _create_and_upload_avatar(
-    nick: str, storage: SupabaseStorageBackend
-) -> str:
-    size = (256, 256)
-    bg_color = (30, 144, 255)
-    text_color = (255, 255, 255)
-    font_size = 1200
-
-    img = Image.new("RGB", size, bg_color)
-    draw = ImageDraw.Draw(img)
-
-    try:
-        font = ImageFont.truetype("arial.ttf", font_size)
-    except Exception:
-        font = ImageFont.load_default()
-
-    letter = nick[0].upper() if nick else "?"
-    # Use textbbox for Pillow >=10
-    bbox = draw.textbbox((0, 0), letter, font=font)
-    text_width = bbox[2] - bbox[0]
-    text_height = bbox[3] - bbox[1]
-    position = ((size[0] - text_width) // 2, (size[1] - text_height) // 2)
-
-    draw.text(position, letter, fill=text_color, font=font)
-
-    buf = io.BytesIO()
-    img.save(buf, format="PNG")
-    buf.seek(0)
-
-    filename = f"user_avatar_{nick}.png"
-    file_url = storage.upload_file(buf.read(), filename)
-    return file_url
+# def _create_and_upload_avatar(
+#     nick: str, storage: SupabaseStorageBackend
+# ) -> str:
+#     size = (256, 256)
+#     bg_color = (30, 144, 255)
+#     text_color = (255, 255, 255)
+#     font_size = 1200
+#
+#     img = Image.new("RGB", size, bg_color)
+#     draw = ImageDraw.Draw(img)
+#
+#     try:
+#         font = ImageFont.truetype("arial.ttf", font_size)
+#     except Exception:
+#         font = ImageFont.load_default()
+#
+#     letter = nick[0].upper() if nick else "?"
+#     # Use textbbox for Pillow >=10
+#     bbox = draw.textbbox((0, 0), letter, font=font)
+#     text_width = bbox[2] - bbox[0]
+#     text_height = bbox[3] - bbox[1]
+#     position = ((size[0] - text_width) // 2, (size[1] - text_height) // 2)
+#
+#     draw.text(position, letter, fill=text_color, font=font)
+#
+#     buf = io.BytesIO()
+#     img.save(buf, format="PNG")
+#     buf.seek(0)
+#
+#     filename = f"user_avatar_{nick}.png"
+#     file_url = storage.upload_file(buf.read(), filename)
+#     return file_url
 
 
 class PasswordHasher:
