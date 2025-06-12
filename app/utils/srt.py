@@ -16,6 +16,8 @@ def format_timestamp(seconds: float) -> str:
 def generate_srt(transcription: Transcription) -> str:
     lines = []
     idx = 1
+    last_end_time = 0.0
+
     for segment in transcription.segments:
         for word in segment.words:
             start = format_timestamp(word.start)
@@ -25,5 +27,14 @@ def generate_srt(transcription: Transcription) -> str:
             lines.append(word.text.strip())
             lines.append("")
             idx += 1
+            last_end_time = max(last_end_time, word.end)
 
+    end_start_time = last_end_time
+    start = format_timestamp(end_start_time)
+    end = format_timestamp(end_start_time + 0.3)
+
+    lines.append(f"{idx}")
+    lines.append(f"{start} --> {end}")
+    lines.append("end")
+    lines.append("")
     return "\n".join(lines)
