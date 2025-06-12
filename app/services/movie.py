@@ -13,6 +13,7 @@ from app.schemas.audio import AudioRead
 from app.schemas.movie import MovieCreate, MovieRead, MovieReadBasic
 from app.schemas.reel import ReelWithAudio
 from app.services.utils import get_file_duration
+import app.services.reel as services_reel
 
 
 def _build_movie_read(db_movie):
@@ -170,6 +171,10 @@ def delete_movie(
     db_movie = db.get(Movie, movie_id)
     if not db_movie:
         raise HTTPException(status_code=404, detail="Movie not found")
+
+    for reel in db_movie.reels:
+        services_reel.delete_reel(db, storage, reel.id)
+
     if db_movie.file_path:
         storage.delete_file(f"{db_movie.id}.{db_movie.type}")
     db.delete(db_movie)
