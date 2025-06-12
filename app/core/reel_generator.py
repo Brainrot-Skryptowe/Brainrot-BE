@@ -102,7 +102,7 @@ class ReelGenerator:
     def _load_video_clip(self, movie_path: str):
         clip = VideoFileClip(
             movie_path
-        ).without_audio()  # usuń oryginalny dźwięk
+        ).without_audio()
         clip = clip.resized(height=self.video_height)
         clip = clip.cropped(x_center=clip.w / 2, width=self.video_width)
         return clip
